@@ -1,5 +1,6 @@
 # -*- org-adapt-indentation: nil; org-edit-src-content-indentation: 0; org-src-preserve-indentation: t; -*-
 #+TITLE: Emacs Init File
+#+STARTUP: showall
 #+PROPERTY: tangle no
 #+PROPERTY: noweb yes
 #+PROPERTY: noweb-ref runtime-configuration

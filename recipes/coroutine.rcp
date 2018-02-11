@@ -1,0 +1,4 @@
+(:name coroutine
+       :type emacswiki
+       :depends tagbody
+       :checksum "329146afdedf321c7fbd2297094dd8475af8242a")

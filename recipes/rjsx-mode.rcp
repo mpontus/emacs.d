@@ -1,0 +1,3 @@
+(:name rjsx-mode
+       :type github
+       :pkgname "felipeochoa/rjsx-mode")

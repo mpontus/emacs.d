@@ -1,0 +1,3 @@
+(:name buttercup
+       :type github
+       :pkgname "jorgenschaefer/emacs-buttercup")

@@ -1,0 +1,4 @@
+(:name paxedit
+       :type github
+       :pkgname "promethial/paxedit")
+

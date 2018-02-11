@@ -1,0 +1,3 @@
+(:name gh
+       :type github
+       :pkgname "sigma/marshal.el")

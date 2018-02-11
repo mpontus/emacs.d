@@ -1,0 +1,3 @@
+(:name espuds
+       :type github
+       :pkgname "ecukes/espuds.el")

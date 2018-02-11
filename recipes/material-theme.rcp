@@ -1,0 +1,4 @@
+(:name material-theme
+       :type github
+       :url "https://github.com/cpaulik/emacs-material-theme.git"
+       :prepare (add-to-list (quote custom-theme-load-path) default-directory))

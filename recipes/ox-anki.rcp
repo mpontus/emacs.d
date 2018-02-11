@@ -1,0 +1,3 @@
+(:name ox-anki
+       :type github
+       :pkgname "vspinu/ox-anki")

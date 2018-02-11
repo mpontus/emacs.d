@@ -1,0 +1,3 @@
+(:name web-beautify
+       :url "https://github.com/yasuyk/web-beautify.git"
+       :type github)

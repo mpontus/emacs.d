@@ -1,0 +1,3 @@
+(:name make-color
+       :type github
+       :pkgname "alezost/make-color.el")

@@ -5,5 +5,5 @@
 /backups/
 /undo-tree/
 /history
-.org-id-locations
+/.org-id-locations
 /.mc-lists.el

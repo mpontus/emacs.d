@@ -60,7 +60,9 @@ This script makes sure that el-get is installed and available.
   (package-install 'el-get)
   (require 'el-get)
   ;; Use el-get to reinstall el-get to pull all the recipes
-  (el-get 'sync "el-get"))
+  (el-get 'sync "el-get")
+  ;; Update recipes from package.el
+  (el-get-elpa-build-local-recipes))
 #+END_SRC
 
 * General

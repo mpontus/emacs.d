@@ -1,4 +1,0 @@
-(:name impatient-mode
-       :type git
-       :url "https://github.com/skeeto/impatient-mode"
-       )

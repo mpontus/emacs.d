@@ -1,3 +1,0 @@
-(:name ert-runner
-       :type github
-       :pkgname "rejeep/ert-runner.el")

@@ -1,4 +1,0 @@
-(:name ecukes
-       :type github
-       :pkgname "ecukes/ecukes.el"
-       :depends ansi)

@@ -1,4 +1,0 @@
-(:name psysh
-       :pkgname "zonuexe/psysh.el"
-       :type github
-       )

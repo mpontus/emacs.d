@@ -1,5 +1,0 @@
-(:name lispy
-       :description "vi-like paredit."
-       :type github
-       :pkgname "abo-abo/lispy"
-       :depends (hydra helm ace-jump-mode s noflet multiple-cursors iedit highlight ace-window))

@@ -1,4 +1,0 @@
-(:name cyberpunk-theme
-       :type github
-       :pkgname "n3mo/cyberpunk-theme.el" 
-       :prepare (add-to-list (quote custom-theme-load-path) default-directory))

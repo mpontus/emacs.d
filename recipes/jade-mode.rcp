@@ -1,3 +1,0 @@
-(:name jade-mode
-       :type github
-       :pkgname "brianc/jade-mode")

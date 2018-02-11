@@ -1,4 +1,0 @@
-(:name shebang
-       :type http
-       :url "http://harts.net/reece/emacs/shebang.el"
-       :checksum "16d96a59bace43cdc7543a72b4ad1eab9ae7bcdc")

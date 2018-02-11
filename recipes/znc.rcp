@@ -1,3 +1,0 @@
-(:name znc
-       :type github
-       :pkgname "sshirokov/znc.el")

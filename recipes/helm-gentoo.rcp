@@ -1,3 +1,0 @@
-(:name helm-gentoo
-       :type github
-       :pkgname "emacs-helm/helm-gentoo")

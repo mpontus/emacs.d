@@ -1,7 +1,8 @@
 /init.el
 /init.elc
-/backups/
-/history
 /elpa/
 /el-get/
+/backups/
+/undo-tree/
+/history
 .org-id-locations

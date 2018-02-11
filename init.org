@@ -120,6 +120,29 @@ Change default emacs appearance
 (setq initial-frame-alist '((fullscreen . maximized)))
 #+end_src
 
+** Undo Tree
+
+The main point of emacs undo implementation is that it preserves all history even if you go back a couple of steps and introduce new changes.
+
+This feature can help if something goes wrong, but otherwise complicates unnecessarily undo-redo workflow by making it non-linear.
+
+Undo tree's approach keeps the basic workflow simple, while saving all of the undo information which can be accessed when necessary (<kbd>C-x u</kbd>).
+
+#+BEGIN_SRC emacs-lisp
+(el-get 'sync "undo-tree")
+
+(global-set-key (kbd "C-/") 'undo-tree-undo)
+(global-set-key (kbd "C-?") 'undo-tree-redo)
+(global-set-key (kbd "C-x u") 'undo-tree-visualize)
+
+;; Save undo history between sessions
+(setq-default undo-tree-auto-save-history t)
+(setq-default undo-tree-history-directory-alist
+              '(("." . "~/.emacs.d/undo-tree/")))
+
+;; I had this set at some point. I don't remember why.
+;; (setcdr undo-tree-map nil)
+#+END_SRC
 
 * Version Control
 

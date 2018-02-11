@@ -154,19 +154,6 @@ Entry point is <kbd>C-c m</kbd>
 
 #+BEGIN_SRC emacs-lisp
 (el-get 'sync "multiple-cursors")
-(el-get 'sync "hydra")
-
-;; Mutliple Cursors functionality is accessible via Hydra bound to <C-c m>
-(defhydra hydra-zoom (global-map "<C-c m>")
-  "multiple-cursors"
-  ("n" mc/mark-next-like-this "mark next")
-  ("p" mc/mark-previous-like-this "mark prev")
-  ("N" mc/unmark-next-like-this "unmark next")
-  ("P" mc/unmark-previous-like-this "unmark prev")
-  ("C-n" mc/skip-to-next-like-this "skip next")
-  ("C-p" mc/skip-to-previous-like-this "skip prev")
-  ("a" mc/mark-all-like-this "mark all")
-  ("d" mc/mark-all-like-this-in-defun "mark defun"))
 #+END_SRC
 
 * Version Control

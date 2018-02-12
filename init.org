@@ -155,6 +155,16 @@ Entry point is <kbd>C-c m</kbd>
 (el-get 'sync "multiple-cursors")
 #+END_SRC
 
+** Editorconfig
+
+Add support for .editorconfig files to infer per-project code style settings.
+
+#+BEGIN_SRC emacs-lisp
+(el-get 'sync "editorconfig")
+
+(editorconfig-mode 1)
+#+END_SRC
+
 * Version Control
 
 Configuration for Version Control tools.

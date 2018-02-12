@@ -46,7 +46,6 @@ Package.el is used as one of el-get's installation methods and it is also used t
 (require 'package)
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
 #+END_SRC
 
 *** El-get

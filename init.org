@@ -95,6 +95,9 @@ Below are some of the sane defaults that make my life easier.
 (setq auto-save-file-name-transforms
       `((".*" ,(expand-file-name "backups" user-emacs-directory) t)))
 
+;; Replace selection when region is active during `yank'
+(delete-selection-mode +1)
+
 ;; Disable ring bell on `keyboard-quit` (<C-g>)
 (setq ring-bell-function 'ignore)
 #+END_SRC

@@ -270,3 +270,23 @@ Look up prettier executable in node_modules
 (add-hook 'prettier-js-mode-hook 'add-node-modules-path)
 #+END_SRC
 
+** Static Analysis
+
+Flycheck will use static analysis tools and highlight errors in the buffer.
+
+#+BEGIN_SRC emacs-lisp
+(el-get 'sync "flycheck")
+
+(add-hook 'js-mode-hook 'flycheck-mode)
+#+END_SRC
+
+Flow errors will be highlighted in the buffer using flycheck.
+
+#+BEGIN_SRC emacs-lisp
+;;(el-get 'sync "flycheck")
+;; (el-get 'sync "flycheck-flow")
+
+;; Run after eslint when eslint takes precedence
+;;(flycheck-add-next-checker 'javascript-eslint 'javascript-flow)
+(ignore)
+#+END_SRC

@@ -34,44 +34,31 @@ Make sure the properties at the top of the file are initialized before evaluatin
 
 ** Package Manager
 
-Some of the configuration relies on third-party packages which are pulled separately.
-
-I like to center my configuration around concepts and not tools, which is why I prefer prefer [el-get](https://github.com/dimitri/el-get) over [use-package](https://github.com/jwiegley/use-package).
+Set up package source to be used for installing packages where they are needed.
 
 *** Package.el
 
-Package.el is used as one of el-get's installation methods and it is also used to install el-get.
+Package.el is sufficient for now. 
 
 #+BEGIN_SRC emacs-lisp
 (require 'package)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/"))
-#+END_SRC
 
-*** El-get
+(setq-default package-archives
+	      '(("melpa" . "https://melpa.org/packages/")
+		("gnu" . "http://elpa.gnu.org/packages/")))
 
-This script makes sure that el-get is installed and available.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path (expand-file-name "el-get/el-get" user-emacs-directory))
-
-(unless (require 'el-get nil 'noerror)
-  (package-refresh-contents)
-  (package-install 'el-get)
-  (require 'el-get)
-  ;; Use el-get to reinstall el-get to pull all the recipes
-  (el-get 'sync "el-get")
-  ;; Update recipes from package.el
-  (el-get-elpa-build-local-recipes))
+(unless package-archive-contents
+  (package-initialize)
+  (package-refresh-contents))
 #+END_SRC
 
 * General
 
-Basic configuration applicable to every activity.
+Basic configuration applicable everywhere.
 
 ** Better defaults
 
-Below are some of the sane defaults that make my life easier.
+Adjust some minor annoyances in default emacs configuration.
 
 #+BEGIN_SRC emacs-lisp
 ;; Remap <C-h> to <DEL> for accessiblity
@@ -131,11 +118,12 @@ Change default emacs appearance
 Emacs must infer $PATH from the shell configuration.
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "exec-path-from-shell")
+(package-install 'exec-path-from-shell)
 
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 #+END_SRC
+
 ** Undo Tree
 
 The main point of emacs undo implementation is that it preserves all history even if you go back a couple of steps and introduce new changes.
@@ -145,7 +133,7 @@ This feature can help if something goes wrong, but otherwise complicates unneces
 Undo tree's approach keeps the basic workflow simple, while saving all of the undo information which can be accessed when necessary (<kbd>C-x u</kbd>).
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "undo-tree")
+(package-install 'undo-tree)
 (global-undo-tree-mode 1)
 
 (global-set-key (kbd "C-/") 'undo-tree-undo)
@@ -168,7 +156,7 @@ Multiple cursors is like macro which allows you to observe and adjust results du
 Entry point is <kbd>C-c m</kbd>
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "multiple-cursors")
+(package-install 'multiple-cursors)
 
 (global-set-key (kbd "C->") 'mc/mark-more-like-this-extended)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
@@ -180,7 +168,7 @@ Entry point is <kbd>C-c m</kbd>
 Add support for .editorconfig files to infer per-project code style settings.
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "editorconfig")
+(package-install 'editorconfig)
 
 (editorconfig-mode 1)
 #+END_SRC
@@ -194,7 +182,7 @@ Configuration for Version Control tools.
 Magit is a Git interface for emacs. It helps tremendously with partial commits, rebase and history browsing.
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "magit")
+(package-install 'magit)
 
 (global-set-key (kbd "C-x g g") 'magit-status)
 #+END_SRC
@@ -204,7 +192,7 @@ Magit is a Git interface for emacs. It helps tremendously with partial commits, 
 Git timemachine allows you to quickly review the history of a signle file
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "git-timemachine")
+(package-install 'git-timemachine)
 
 (global-set-key (kbd "C-x g t") 'git-timemachine)
 #+END_SRC
@@ -212,7 +200,7 @@ Git timemachine allows you to quickly review the history of a signle file
 ** Git Gutter
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "git-gutter")
+(package-install 'git-gutter)
 
 (global-git-gutter-mode 1)
 #+END_SRC
@@ -229,7 +217,7 @@ Ediff starts in the new frame by defualt. This change makes ediff reuse existing
 Use projectile to traverse the files between projects.
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "projectile")
+(package-install 'projectile)
 
 ;; Remove projectile shortcut which violates userspace key binding guidelines
 (with-eval-after-load "projectile"
@@ -245,7 +233,7 @@ Use projectile to traverse the files between projects.
 Install =ag= to enable some of Projectile's functionality.
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "ag")
+(package-install 'ag)
 #+END_SRC
 
 * Javascript
@@ -257,7 +245,7 @@ Set up tools for working with JavaScript code.
 Prettier-emacs automatically formats code on save.
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "prettier-js")
+(package-install 'prettier-js)
 
 (add-hook 'js-mode-hook 'prettier-js-mode)
 #+END_SRC
@@ -265,28 +253,32 @@ Prettier-emacs automatically formats code on save.
 Look up prettier executable in node_modules
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "add-node-modules-path")
+(package-install 'add-node-modules-path)
 
 (add-hook 'prettier-js-mode-hook 'add-node-modules-path)
 #+END_SRC
 
-** Static Analysis
+** Linter
 
 Flycheck will use static analysis tools and highlight errors in the buffer.
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "flycheck")
+(package-install 'flycheck)
 
-(add-hook 'js-mode-hook 'flycheck-mode)
+(add-hook 'js-mode-hook
+	  (lambda ()
+	    (flycheck-mode 1)
+	    ;; Unless explicitly told flycheck can choose other
+	    ;; checker which will mess up the chain setup below
+	    (setq-local flycheck-checker 'javascript-eslint)))
 #+END_SRC
 
-Flow errors will be highlighted in the buffer using flycheck.
+Enable Flow checker for flycheck
 
 #+BEGIN_SRC emacs-lisp
-;;(el-get 'sync "flycheck")
-;; (el-get 'sync "flycheck-flow")
+(package-install 'flycheck-flow)
 
-;; Run after eslint when eslint takes precedence
-;;(flycheck-add-next-checker 'javascript-eslint 'javascript-flow)
-(ignore)
+(with-eval-after-load "flycheck"
+  (require 'flycheck-flow)
+  (flycheck-add-next-checker 'javascript-eslint 'javascript-flow))
 #+END_SRC

@@ -235,5 +235,27 @@ Use projectile to traverse the files between projects.
 (global-set-key (kbd "C-x p") 'projectile-command-map)
 #+END_SRC
 
+* Javascript
+
+Set up tools for working with JavaScript code.
+
+** Prettier
+
+Prettier-emacs automatically formats code on save.
+
+#+BEGIN_SRC emacs-lisp
+(el-get 'sync "add-node-modules-path")
+
+(add-hook 'js-mode-hook 'prettier-js-mode)
+#+END_SRC
+
+Prettier executable may not be avilable globally, but instead bundled
+as package dependencies. In this case =prettier-js= should look in
+=node_modules/.bin= for it.
+
+#+BEGIN_SRC emacs-lisp
+(el-get 'sync "prettier-js")
+
+(add-hook 'prettier-js-mode-hook 'add-node-modules-path)
 #+END_SRC
 

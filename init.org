@@ -123,6 +123,16 @@ Change default emacs appearance
 (setq initial-frame-alist '((fullscreen . maximized)))
 #+end_src
 
+** Exec Path From Shell
+
+Emacs must infer $PATH from the shell configuration.
+
+#+BEGIN_SRC emacs-lisp
+(el-get 'sync "exec-path-from-shell")
+
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+#+END_SRC
 ** Undo Tree
 
 The main point of emacs undo implementation is that it preserves all history even if you go back a couple of steps and introduce new changes.

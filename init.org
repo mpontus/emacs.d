@@ -232,10 +232,20 @@ Use projectile to traverse the files between projects.
 (el-get 'sync "projectile")
 
 ;; Remove projectile shortcut which violates userspace key binding guidelines
-(define-key projectile-mode-map (kbd "C-c p") nil)
+(with-eval-after-load "projectile"
+  (define-key projectile-mode-map (kbd "C-c p") nil))
 
 ;; By my own convention, globally accessible key-bindings live under C-x prefix.
 (global-set-key (kbd "C-x p") 'projectile-command-map)
+
+;; Enable
+(projectile-mode 1)
+#+END_SRC
+
+Install =ag= to enable some of Projectile's functionality.
+
+#+BEGIN_SRC emacs-lisp
+(el-get 'sync "ag")
 #+END_SRC
 
 * Javascript

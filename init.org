@@ -221,3 +221,19 @@ Ediff starts in the new frame by defualt. This change makes ediff reuse existing
 #+BEGIN_SRC emacs-lisp
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 #+END_SRC
+* Projects
+
+Use projectile to traverse the files between projects.
+
+#+BEGIN_SRC emacs-lisp
+(el-get 'sync "projectile")
+
+;; Remove projectile shortcut which violates userspace key binding guidelines
+(define-key projectile-mode-map (kbd "C-c p") nil)
+
+;; By my own convention, globally accessible key-bindings live under C-x prefix.
+(global-set-key (kbd "C-x p") 'projectile-command-map)
+#+END_SRC
+
+#+END_SRC
+

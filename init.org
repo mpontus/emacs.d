@@ -252,22 +252,20 @@ Install =ag= to enable some of Projectile's functionality.
 
 Set up tools for working with JavaScript code.
 
-** Prettier
+** Formatting
 
 Prettier-emacs automatically formats code on save.
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "add-node-modules-path")
+(el-get 'sync "prettier-js")
 
 (add-hook 'js-mode-hook 'prettier-js-mode)
 #+END_SRC
 
-Prettier executable may not be avilable globally, but instead bundled
-as package dependencies. In this case =prettier-js= should look in
-=node_modules/.bin= for it.
+Look up prettier executable in node_modules
 
 #+BEGIN_SRC emacs-lisp
-(el-get 'sync "prettier-js")
+(el-get 'sync "add-node-modules-path")
 
 (add-hook 'prettier-js-mode-hook 'add-node-modules-path)
 #+END_SRC

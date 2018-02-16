@@ -298,6 +298,10 @@ Flycheck will use static analysis tools and highlight errors in the buffer.
 	    ;; Unless explicitly told flycheck can choose other
 	    ;; checker which will mess up the chain setup below
 	    (setq-local flycheck-checker 'javascript-eslint)))
+
+(with-eval-after-load "js"
+  (define-key js-mode-map (kbd "M-p") 'flycheck-previous-error)
+  (define-key js-mode-map (kbd "M-n") 'flycheck-next-error))
 #+END_SRC
 
 Enable Flow checker for flycheck

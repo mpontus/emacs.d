@@ -61,9 +61,6 @@ Basic configuration applicable everywhere.
 Adjust some minor annoyances in default emacs configuration.
 
 #+BEGIN_SRC emacs-lisp
-;; Remap <C-h> to <DEL> for accessiblity
-(keyboard-translate ?\C-h ?\C-?)
-
 ;; Answer confirmation dialogs with a single key
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -90,6 +87,17 @@ Adjust some minor annoyances in default emacs configuration.
 
 ;; Disable electric-indent-mode
 (electric-indent-mode -1)
+#+END_SRC
+
+Backspace key is relatively difficult to access. For backward deletion I use <kbd>C-h</kbd> instead.
+
+#+BEGIN_SRC emacs-lisp
+;; In every situation where I want to use <backspace> I want to be able to use <C-h> instead.
+(global-set-key (kbd "C-h") 'backward-delete-char)
+
+;; I haven't been able to figure out how to translate these combinations
+(global-set-key (kbd "M-h") 'backward-kill-word)
+(global-set-key (kbd "C-M-h") 'backward-kill-sexp)
 #+END_SRC
 
 ** Display

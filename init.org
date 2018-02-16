@@ -244,6 +244,16 @@ Install =ag= to enable some of Projectile's functionality.
 (package-install 'ag)
 #+END_SRC
 
+* Emacs Lisp
+
+Paredit helps keeps parentheses ballanced and provides a few useful commands for working with lisp code.
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'paredit)
+
+(add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+#+END_SRC
+
 * Javascript
 
 Set up tools for working with JavaScript code.

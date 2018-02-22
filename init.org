@@ -326,12 +326,3 @@ Enable Flow checker for flycheck
   (require 'flycheck-flow)
   (flycheck-add-next-checker 'javascript-eslint 'javascript-flow))
 #+END_SRC
-
-Set up < and > as syntactic pairs.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'js-mode-hook 
-	  (defun setup-js-flow-syntax ()
-	    (modify-syntax-entry ?< "(>")
-	    (modify-syntax-entry ?> ")<")))
-#+END_SRC

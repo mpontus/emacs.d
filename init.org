@@ -87,6 +87,9 @@ Adjust some minor annoyances in default emacs configuration.
 
 ;; Disable electric-indent-mode
 (electric-indent-mode -1)
+
+;; Make find-file case-insensitive
+(setq read-file-name-completion-ignore-case t)
 #+END_SRC
 
 Backspace key is relatively difficult to access. For backward deletion I use <kbd>C-h</kbd> instead.

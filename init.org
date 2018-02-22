@@ -124,6 +124,14 @@ Change default emacs appearance
 (setq initial-frame-alist '((fullscreen . maximized)))
 #+end_src
 
+** Subword Mode
+
+=subword-mode= enables emacs to treat each part of camel-cased experession as a separate word.
+
+#+BEGIN_SRC emacs-lisp
+(global-subword-mode 1)
+#+END_SRC
+
 ** Exec Path From Shell
 
 Emacs must infer $PATH from the shell configuration.

@@ -263,7 +263,7 @@ Set up tools for working with JavaScript code.
 I use simple JS mode for now beacuse it's easier to get into when something goes wrong.
 
 #+BEGIN_SRC emacs-lisp
-(with-eval-after-load "js-mode"
+(with-eval-after-load "js"
   (setq-default js-indent-level 2))
 #+END_SRC
 
@@ -303,6 +303,8 @@ Flycheck will use static analysis tools and highlight errors in the buffer.
   (define-key js-mode-map (kbd "M-p") 'flycheck-previous-error)
   (define-key js-mode-map (kbd "M-n") 'flycheck-next-error))
 #+END_SRC
+
+** FlowType Support
 
 Enable Flow checker for flycheck
 

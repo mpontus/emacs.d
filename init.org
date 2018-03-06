@@ -285,6 +285,12 @@ Paredit helps keeps parentheses ballanced and provides a few useful commands for
 (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
 #+END_SRC
 
+Use paredit in eval-expression mode
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'eval-expression-minibuffer-setup-hook 'paredit-mode)
+#+END_SRC
+
 * Markdown
 
 Install markdown mode for syntax highlighting.

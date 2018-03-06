@@ -203,6 +203,15 @@ Install latest org mode from org repo.
 (package-install 'org)
 #+END_SRC
 
+Bind M-p/M-n to move subtree up/down.
+
+I prefer outline move commands because they skip over invisible subtrees which occur when using ~org-match-sparse-tree~.
+
+#+BEGIN_SRC emacs-lisp
+(define-key org-mode-map (kbd "M-p") 'outline-move-subtree-up)
+(define-key org-mode-map (kbd "M-n") 'outline-move-subtree-down)
+#+END_SRC
+
 * Version Control
 
 Configuration for Version Control tools.

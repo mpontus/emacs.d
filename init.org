@@ -265,6 +265,20 @@ Paredit helps keeps parentheses ballanced and provides a few useful commands for
 (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
 #+END_SRC
 
+* Markdown
+
+Install markdown mode for syntax highlighting.
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'markdown-mode)
+#+END_SRC
+
+Enable auto-fill-mode for markdown files.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'markdown-mode-hook 'auto-fill-mode)
+#+END_SRC
+
 * Javascript
 
 Set up tools for working with JavaScript code.

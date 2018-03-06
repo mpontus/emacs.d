@@ -32,26 +32,6 @@ Make sure the properties at the top of the file are initialized before evaluatin
   <<runtime-configuration>>)
 #+END_SRC
 
-** Package Manager
-
-Set up package source to be used for installing packages where they are needed.
-
-*** Package.el
-
-Package.el is sufficient for now. 
-
-#+BEGIN_SRC emacs-lisp
-(require 'package)
-
-(setq-default package-archives
-	      '(("melpa" . "https://melpa.org/packages/")
-		("gnu" . "http://elpa.gnu.org/packages/")))
-
-(unless package-archive-contents
-  (package-initialize)
-  (package-refresh-contents))
-#+END_SRC
-
 * General
 
 Basic configuration applicable everywhere.
@@ -101,6 +81,27 @@ Backspace key is relatively difficult to access. For backward deletion I use <kb
 ;; I haven't been able to figure out how to translate these combinations
 (global-set-key (kbd "M-h") 'backward-kill-word)
 (global-set-key (kbd "C-M-h") 'backward-kill-sexp)
+#+END_SRC
+
+** Package Manager
+
+Emacs package manager setup.
+
+*** Package.el
+
+Use package.el to install stable-ish pacakges.
+
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+
+(setq package-archives
+      '(("org" . "https://orgmode.org/elpa/")
+	("melpa" . "https://melpa.org/packages/")
+	("gnu" . "http://elpa.gnu.org/packages/")))
+
+(unless package-archive-contents
+  (package-initialize)
+  (package-refresh-contents))
 #+END_SRC
 
 ** Display

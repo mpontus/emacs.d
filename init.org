@@ -195,6 +195,14 @@ Add support for .editorconfig files to infer per-project code style settings.
 (editorconfig-mode 1)
 #+END_SRC
 
+* Org Mode
+
+Install latest org mode from org repo.
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'org)
+#+END_SRC
+
 * Version Control
 
 Configuration for Version Control tools.

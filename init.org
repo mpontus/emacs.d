@@ -340,3 +340,48 @@ Enable Flow checker for flycheck
   (require 'flycheck-flow)
   (flycheck-add-next-checker 'javascript-eslint 'javascript-flow))
 #+END_SRC
+
+** Typescript 
+
+Testing TIDE
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'tide)
+#+END_SRC
+
+Add prettier support:
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'prettier-js)
+
+(add-hook 'typescript-mode-hook 'prettier-js-mode)
+
+;; Use prettier executable from node_modules
+(package-install 'add-node-modules-path)
+
+(add-hook 'prettier-js-mode-hook 'add-node-modules-path)
+#+END_SRC
+
+Add eslint checking:
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'flycheck)
+
+(add-hook 'typescript-mode-hook
+	  (defun setup-typescript-flycheck ()
+	    (flycheck-mode 1)
+	    ;; Unless explicitly told flycheck can choose other
+	    ;; checker which will mess up the chain setup below
+	    (setq-local flycheck-checker 'javascript-eslint)))
+
+
+;; Use eslint executable from node_modules
+(package-install 'add-node-modules-path)
+
+(add-hook 'typescript-mode-hook 'add-node-modules-path)
+
+;; Set up flycheck keybindings
+(with-eval-after-load "typescript-mode"
+  (define-key typescript-mode-map (kbd "M-p") 'flycheck-previous-error)
+  (define-key typescript-mode-map (kbd "M-n") 'flycheck-next-error))
+#+END_SRC

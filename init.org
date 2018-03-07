@@ -302,7 +302,9 @@ Install markdown mode for syntax highlighting.
 Enable auto-fill-mode for markdown files.
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'markdown-mode-hook 'auto-fill-mode)
+(package-install 'visual-fill-column)
+
+(add-hook 'markdown-mode-hook 'visual-fill-column-mode)
 #+END_SRC
 
 * Javascript

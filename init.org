@@ -83,6 +83,13 @@ Backspace key is relatively difficult to access. For backward deletion I use <kb
 (global-set-key (kbd "C-M-h") 'backward-kill-sexp)
 #+END_SRC
 
+Debugger must open in the same frame.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'display-buffer-alist
+	     '("`\\*Debugger\\*$" display-buffer-same-window))
+#+END_SRC
+
 ** Package Manager
 
 Emacs package manager setup.

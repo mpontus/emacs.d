@@ -320,6 +320,12 @@ I use simple JS mode for now beacuse it's easier to get into when something goes
   (setq-default js-indent-level 2))
 #+END_SRC
 
+Enable automatic pairing of parentheses and braces:
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'js-mode-hook #'electric-pair-local-mode)
+#+END_SRC
+
 ** Formatting
 
 Prettier-emacs automatically formats code on save.

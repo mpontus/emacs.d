@@ -307,12 +307,20 @@ Install markdown mode for syntax highlighting.
 (package-install 'markdown-mode)
 #+END_SRC
 
-Enable auto-fill-mode for markdown files.
+Enable visual-fill-column and visual-line modes for markdown files.
+
+Visual-fill-colums ensures long lines are broken up at regular intervals to make text more readable.
+
+Unlike auto-fill-mode it does not alter file contents.
+
+Visual-line-mode ensures lines get broken at word boundaries.
 
 #+BEGIN_SRC emacs-lisp
 (package-install 'visual-fill-column)
 
-(add-hook 'markdown-mode-hook 'visual-fill-column-mode)
+(with-eval-after-load 'markdown-mode
+  (add-hook 'markdown-mode-hook 'visual-fill-column-mode)
+  (add-hook 'markdown-mode-hook 'visual-line-mode))
 #+END_SRC
 
 * Javascript

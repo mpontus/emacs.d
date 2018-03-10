@@ -116,6 +116,18 @@ Use package.el to install stable-ish pacakges.
 (add-hook 'after-init-hook 'package-initialize)
 #+END_SRC
 
+*** Quelpa
+
+Quelpa helps install packages which have yet to be published to melpa.
+
+I use it to install my own packages.
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'quelpa)
+
+(quelpa-self-upgrade)
+#+END_SRC
+
 ** Display
 
 Change default emacs appearance

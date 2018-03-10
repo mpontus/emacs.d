@@ -1,7 +1,7 @@
 /init.el
 /init.elc
 /elpa/
-/el-get/
+/quelpa/
 /backups/
 /auto-save-list/
 /undo-tree/
@@ -11,3 +11,4 @@
 /tramp
 /projectile-bookmarks.eld
 /semanticdb
+/bookmarks

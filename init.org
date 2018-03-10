@@ -464,3 +464,15 @@ Visual-line-mode ensures lines get broken at word boundaries.
   (add-hook 'markdown-mode-hook 'visual-fill-column-mode)
   (add-hook 'markdown-mode-hook 'visual-line-mode))
 #+END_SRC
+
+* Bolt
+
+Bolt is a language for schema modeleing in firebase.
+
+#+BEGIN_SRC emacs-lisp
+(quelpa '(bolt-mode
+	  :repo "mpontus/bolt-mode"
+	  :fetcher github))
+#+END_SRC
+
+

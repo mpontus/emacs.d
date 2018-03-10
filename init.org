@@ -121,6 +121,14 @@ Backspace key is relatively difficult to access. For backward deletion I use <kb
 (global-set-key (kbd "C-M-h") 'backward-kill-sexp)
 #+END_SRC
 
+Add ~initials~ to default completion styles.
+
+Enabling this will complete "tdoe" to "toggle-debug-on-error".
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'completion-styles 'initials 'append)
+#+END_SRC
+
 Debugger must open in the same frame.
 
 #+BEGIN_SRC emacs-lisp

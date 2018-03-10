@@ -149,6 +149,22 @@ Change default emacs appearance
 (setq initial-frame-alist '((fullscreen . maximized)))
 #+end_src
 
+** Find-file
+
+Find-file is my primary means for navigating between files, although not the only one.
+
+Because of this, not every file ends up in file-find-history which I'm used to rely on for opening previously accessed files.
+
+Following package adds every opened file, whichever method was used to open it, into ~file-name-history~ used by find-file.
+
+#+BEGIN_SRC emacs-lisp
+(quelpa '(find-file-global-history
+	  :repo "mpontus/find-file-global-history.el"
+	  :fetcher github))
+
+(find-file-global-history-mode 1)
+#+END_SRC
+
 ** Subword Mode
 
 =subword-mode= enables emacs to treat each part of camel-cased experession as a separate word.

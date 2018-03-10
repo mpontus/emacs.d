@@ -262,6 +262,14 @@ I prefer outline move commands because they skip over invisible subtrees which o
   (define-key org-mode-map (kbd "M-n") 'org-move-subtree-down))
 #+END_SRC
 
+Indentation with tabs breaks tags alignment.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'org-mode-hook
+          (defun setup-org-mode-indentation ()
+            (setq indent-tabs-mode nil)))
+#+END_SRC
+
 * Version Control
 
 Configuration for Version Control tools.

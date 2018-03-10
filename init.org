@@ -356,6 +356,7 @@ Enable automatic pairing and alignment of parentheses and braces:
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'js-mode-hook #'electric-pair-local-mode)
+(add-hook 'js-mode-hook #'electric-indent-local-mode)
 #+END_SRC
 
 ** Formatting

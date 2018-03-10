@@ -70,6 +70,9 @@ Adjust some minor annoyances in default emacs configuration.
 
 ;; Make find-file case-insensitive
 (setq read-file-name-completion-ignore-case t)
+
+;; Increase history length
+(setq history-length 8000)
 #+END_SRC
 
 Backspace key is relatively difficult to access. For backward deletion I use <kbd>C-h</kbd> instead.

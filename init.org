@@ -65,7 +65,7 @@ Adjust some minor annoyances in default emacs configuration.
 ;; Disable ring bell on `keyboard-quit` (<C-g>)
 (setq ring-bell-function 'ignore)
 
-;; Disable electric-indent-mode
+;; Disable electric-indent-mode by default
 (electric-indent-mode -1)
 
 ;; Make find-file case-insensitive
@@ -285,6 +285,8 @@ Install =ag= to enable some of Projectile's functionality.
 
 * Emacs Lisp
 
+** Paredit
+
 Paredit helps keeps parentheses ballanced and provides a few useful commands for working with lisp code.
 
 #+BEGIN_SRC emacs-lisp
@@ -336,7 +338,7 @@ I use simple JS mode for now beacuse it's easier to get into when something goes
   (setq-default js-indent-level 2))
 #+END_SRC
 
-Enable automatic pairing of parentheses and braces:
+Enable automatic pairing and alignment of parentheses and braces:
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'js-mode-hook #'electric-pair-local-mode)

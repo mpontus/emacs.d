@@ -36,6 +36,41 @@ Make sure the properties at the top of the file are initialized before evaluatin
 
 Basic configuration applicable everywhere.
 
+** Package Manager
+
+Emacs package manager setup.
+
+*** Package.el
+
+Use package.el to install stable-ish pacakges.
+
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+
+(setq package-archives
+      '(("org" . "https://orgmode.org/elpa/")
+	("melpa" . "https://melpa.org/packages/")
+	("gnu" . "http://elpa.gnu.org/packages/")))
+
+(unless package-archive-contents
+  (package-initialize)
+  (package-refresh-contents))
+
+(add-hook 'after-init-hook 'package-initialize)
+#+END_SRC
+
+*** Quelpa
+
+Quelpa helps install packages which have yet to be published to melpa.
+
+I use it to install my own packages.
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'quelpa)
+
+(quelpa-self-upgrade)
+#+END_SRC
+
 ** Better defaults
 
 Adjust some minor annoyances in default emacs configuration.
@@ -93,39 +128,31 @@ Debugger must open in the same frame.
 	     '("`\\*Debugger\\*$" display-buffer-same-window))
 #+END_SRC
 
-** Package Manager
+** Global find file history
 
-Emacs package manager setup.
+Find-file is my primary means for navigating between files, although not the only one.
 
-*** Package.el
+Because of this, not every file ends up in file-find-history which I'm used to rely on for opening previously accessed files.
 
-Use package.el to install stable-ish pacakges.
+Following package adds every opened file, whichever method was used to open it, into ~file-name-history~ used by find-file.
 
 #+BEGIN_SRC emacs-lisp
-(require 'package)
+(quelpa '(find-file-global-history
+	  :repo "mpontus/find-file-global-history.el"
+	  :fetcher github))
 
-(setq package-archives
-      '(("org" . "https://orgmode.org/elpa/")
-	("melpa" . "https://melpa.org/packages/")
-	("gnu" . "http://elpa.gnu.org/packages/")))
-
-(unless package-archive-contents
-  (package-initialize)
-  (package-refresh-contents))
-
-(add-hook 'after-init-hook 'package-initialize)
+(find-file-global-history-mode 1)
 #+END_SRC
 
-*** Quelpa
+** Exec Path From Shell
 
-Quelpa helps install packages which have yet to be published to melpa.
-
-I use it to install my own packages.
+Emacs must infer $PATH from the shell configuration.
 
 #+BEGIN_SRC emacs-lisp
-(package-install 'quelpa)
+(package-install 'exec-path-from-shell)
 
-(quelpa-self-upgrade)
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
 #+END_SRC
 
 ** Display
@@ -148,41 +175,6 @@ Change default emacs appearance
 ;; Start emacs in fullscreen
 (setq initial-frame-alist '((fullscreen . maximized)))
 #+end_src
-
-** Find-file
-
-Find-file is my primary means for navigating between files, although not the only one.
-
-Because of this, not every file ends up in file-find-history which I'm used to rely on for opening previously accessed files.
-
-Following package adds every opened file, whichever method was used to open it, into ~file-name-history~ used by find-file.
-
-#+BEGIN_SRC emacs-lisp
-(quelpa '(find-file-global-history
-	  :repo "mpontus/find-file-global-history.el"
-	  :fetcher github))
-
-(find-file-global-history-mode 1)
-#+END_SRC
-
-** Subword Mode
-
-=subword-mode= enables emacs to treat each part of camel-cased experession as a separate word.
-
-#+BEGIN_SRC emacs-lisp
-(global-subword-mode 1)
-#+END_SRC
-
-** Exec Path From Shell
-
-Emacs must infer $PATH from the shell configuration.
-
-#+BEGIN_SRC emacs-lisp
-(package-install 'exec-path-from-shell)
-
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-#+END_SRC
 
 ** Undo Tree
 
@@ -221,6 +213,14 @@ Entry point is <kbd>C-c m</kbd>
 (global-set-key (kbd "C->") 'mc/mark-more-like-this-extended)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-M->") 'mc/mark-all-like-this)
+#+END_SRC
+
+** Subword Mode
+
+=subword-mode= enables emacs to treat each part of camel-cased experession as a separate word.
+
+#+BEGIN_SRC emacs-lisp
+(global-subword-mode 1)
 #+END_SRC
 
 ** Editorconfig

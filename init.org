@@ -247,6 +247,9 @@ Install latest org mode from org repo.
 
 #+BEGIN_SRC emacs-lisp
 (package-install 'org)
+
+(with-eval-after-load 'org
+  (define-key org-mode-map (kbd "C-c C-g") 'org-set-tags))
 #+END_SRC
 
 Bind M-p/M-n to move subtree up/down.

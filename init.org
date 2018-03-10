@@ -258,8 +258,8 @@ I prefer outline move commands because they skip over invisible subtrees which o
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'org
-  (define-key org-mode-map (kbd "M-p") 'outline-move-subtree-up)
-  (define-key org-mode-map (kbd "M-n") 'outline-move-subtree-down))
+  (define-key org-mode-map (kbd "M-p") 'org-move-subtree-up)
+  (define-key org-mode-map (kbd "M-n") 'org-move-subtree-down))
 #+END_SRC
 
 * Version Control

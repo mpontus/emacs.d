@@ -327,30 +327,6 @@ Enable flycheck in emacs lisp buffers for package authoring.
 (define-key emacs-lisp-mode-map (kbd "M-p") 'previous-error)
 #+END_SRC
 
-* Markdown
-
-Install markdown mode for syntax highlighting.
-
-#+BEGIN_SRC emacs-lisp
-(package-install 'markdown-mode)
-#+END_SRC
-
-Enable visual-fill-column and visual-line modes for markdown files.
-
-Visual-fill-colums ensures long lines are broken up at regular intervals to make text more readable.
-
-Unlike auto-fill-mode it does not alter file contents.
-
-Visual-line-mode ensures lines get broken at word boundaries.
-
-#+BEGIN_SRC emacs-lisp
-(package-install 'visual-fill-column)
-
-(with-eval-after-load 'markdown-mode
-  (add-hook 'markdown-mode-hook 'visual-fill-column-mode)
-  (add-hook 'markdown-mode-hook 'visual-line-mode))
-#+END_SRC
-
 * Javascript
 
 Set up tools for working with JavaScript code.
@@ -463,4 +439,28 @@ Add eslint checking:
 (with-eval-after-load "typescript-mode"
   (define-key typescript-mode-map (kbd "M-p") 'flycheck-previous-error)
   (define-key typescript-mode-map (kbd "M-n") 'flycheck-next-error))
+#+END_SRC
+
+* Markdown
+
+Install markdown mode for syntax highlighting.
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'markdown-mode)
+#+END_SRC
+
+Enable visual-fill-column and visual-line modes for markdown files.
+
+Visual-fill-colums ensures long lines are broken up at regular intervals to make text more readable.
+
+Unlike auto-fill-mode it does not alter file contents.
+
+Visual-line-mode ensures lines get broken at word boundaries.
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'visual-fill-column)
+
+(with-eval-after-load 'markdown-mode
+  (add-hook 'markdown-mode-hook 'visual-fill-column-mode)
+  (add-hook 'markdown-mode-hook 'visual-line-mode))
 #+END_SRC

@@ -184,6 +184,18 @@ Change default emacs appearance
 (setq initial-frame-alist '((fullscreen . maximized)))
 #+end_src
 
+** Winner mode
+
+Winner mode provides undo history for window configuration.
+
+#+BEGIN_SRC emacs-lisp
+(winner-mode 1)
+
+(global-set-key (kbd "C-x w C-/") 'winner-undo)
+(global-set-key (kbd "C-x w C-?") 'winner-redo)
+
+#+END_SRC
+
 ** Undo Tree
 
 The main point of emacs undo implementation is that it preserves all history even if you go back a couple of steps and introduce new changes.

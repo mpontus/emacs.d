@@ -253,6 +253,16 @@ Add support for .editorconfig files to infer per-project code style settings.
 (editorconfig-mode 1)
 #+END_SRC
 
+** File Management
+
+Dired+ enhances ~dired~ functionality with some useful commands.
+
+Namely, I use it to perform search-and-replace on filenames thanks to ~diredp-insert-subdirs-recursive~.
+
+#+BEGIN_SRC emacs-lisp
+(quelpa '(dired+ :fetcher github :repo "emacsmirror/dired-plus"))
+#+END_SRC
+
 * Org Mode
 
 Install latest org mode from org repo.

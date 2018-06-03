@@ -269,19 +269,24 @@ Install latest org mode from org repo.
 
 #+BEGIN_SRC emacs-lisp
 (package-install 'org)
-
-(with-eval-after-load 'org
-  (define-key org-mode-map (kbd "C-c C-g") 'org-set-tags))
 #+END_SRC
 
-Bind M-p/M-n to move subtree up/down.
-
-I prefer outline move commands because they skip over invisible subtrees which occur when using ~org-match-sparse-tree~.
+Enable wrapping of lines.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'org
-  (define-key org-mode-map (kbd "M-p") 'org-move-subtree-up)
-  (define-key org-mode-map (kbd "M-n") 'org-move-subtree-down))
+  (add-hook 'org-mode-hook 'visual-line-mode))
+#+END_SRC
+
+Custom keybindings.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'org
+  ;; Add aligned tag with C-c C-g
+  (define-key org-mode-map (kbd "C-c C-g") 'org-set-tags)
+  ;; Move subheadings/list-items up and down with M-p/M-n
+  (define-key org-mode-map (kbd "M-p") 'org-metaup)
+  (define-key org-mode-map (kbd "M-n") 'org-metadown))
 #+END_SRC
 
 Indentation with tabs breaks tags alignment.
@@ -502,7 +507,7 @@ Add eslint checking:
 	    (flycheck-mode 1)
 	    ;; Unless explicitly told flycheck can choose other
 	    ;; checker which will mess up the chain setup below
-	    (setq-local flycheck-checker 'javascript-eslint)))
+	    (setq-local flycheck-checker 'typescript-tslint)))
 
 
 ;; Use eslint executable from node_modules

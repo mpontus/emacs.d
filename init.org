@@ -472,6 +472,13 @@ Testing TIDE
 (package-install 'tide)
 #+END_SRC
 
+Enable auto-pairing:
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'typescript-mode-hook #'electric-pair-local-mode)
+(add-hook 'typescript-mode-hook #'electric-indent-local-mode)
+#+END_SRC
+
 Add prettier support:
 
 #+BEGIN_SRC emacs-lisp

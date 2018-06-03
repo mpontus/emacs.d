@@ -451,6 +451,17 @@ Enable Flow checker for flycheck
 (with-eval-after-load "flycheck"
   (require 'flycheck-flow)
   (flycheck-add-next-checker 'javascript-eslint 'javascript-flow))
+
+;; Skip non-annotated files
+(with-eval-after-load "flycheck-flow"
+  (setq flycheck-javascript-flow-args '("--respect-pragma")))
+#+END_SRC
+
+Add .js.flow to javascript extensions
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist
+             '("\\.js.flow\\'" . js-mode))
 #+END_SRC
 
 ** Typescript 

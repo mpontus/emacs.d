@@ -469,6 +469,14 @@ Add .js.flow to javascript extensions
              '("\\.js.flow\\'" . js-mode))
 #+END_SRC
 
+Enable completion support for Flow files:
+
+#+BEGIN_SRC emacs-lisp
+(quelpa '(flow-completion-at-point :fetcher github :repo "mpontus/emacs-flow-completion-at-point"))
+
+(add-hook 'js-mode-hook 'flow-completion-at-point-mode)
+#+END_SRC
+
 ** Typescript 
 
 Testing TIDE

@@ -435,6 +435,16 @@ Enable automatic pairing and alignment of parentheses and braces:
 (add-hook 'js-mode-hook #'electric-indent-local-mode)
 #+END_SRC
 
+** Custom keybindings
+
+I often need to sort lines in alphabetical order when working with Javascript.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "js"
+  (define-key js-mode-map (kbd "C-c s") 'sort-lines))
+#+END_SRC
+
+
 ** Formatting
 
 Prettier-emacs automatically formats code on save.

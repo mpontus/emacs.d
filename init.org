@@ -555,6 +555,14 @@ Add eslint checking:
   (define-key typescript-mode-map (kbd "M-n") 'flycheck-next-error))
 #+END_SRC
 
+* Python
+
+Enable electric-pair-mode to surround seleciton with parentheses:
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'python-mode-hook #'electric-pair-local-mode)
+#+END_SRC
+
 * Markdown
 
 Install markdown mode for syntax highlighting.

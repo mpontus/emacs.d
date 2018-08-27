@@ -587,6 +587,12 @@ Visual-line-mode ensures lines get broken at word boundaries.
   (add-hook 'markdown-mode-hook 'visual-line-mode))
 #+END_SRC
 
+Enable spell checking.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'markdown-mode-hook 'flyspell-mode)
+#+END_SRC
+
 * Bolt
 
 Bolt is a language for schema modeleing in firebase.

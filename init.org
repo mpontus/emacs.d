@@ -275,6 +275,20 @@ Namely, I use it to perform search-and-replace on filenames thanks to ~diredp-in
 (quelpa '(dired+ :fetcher github :repo "emacsmirror/dired-plus"))
 #+END_SRC
 
+Disable dired confirmation about recursively copying directories:
+
+#+BEGIN_SRC emacs-lisp
+(setq-default dired-recursive-copies 'always)
+#+END_SRC
+
+** Spelling
+
+Aspell, which is selected by default, appears to fail sometimes during ~flyspell-buffer~.
+
+#+BEGIN_SRC emacs-lisp
+(setq ispell-program-name "hunspell")
+#+END_SRC
+
 * Org Mode
 
 Install latest org mode from org repo.

@@ -152,6 +152,18 @@ Following package adds every opened file, whichever method was used to open it, 
 (find-file-global-history-mode 1)
 #+END_SRC
 
+** Yank entire buffer
+
+I often need to copy contents of the entire buffer somewhere else. This shortcut helps with that.
+
+#+BEGIN_SRC emacs-lisp
+(defun yank-entire-buffer ()
+    (interactive)
+  (kill-ring-save (point-min) (point-max)))
+
+(global-set-key (kbd "C-c M-w") 'yank-entire-buffer)
+#+END_SRC
+
 ** Exec Path From Shell
 
 Emacs must infer $PATH from the shell configuration.

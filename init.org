@@ -52,11 +52,9 @@ Use package.el to install stable-ish pacakges.
 	("melpa" . "https://melpa.org/packages/")
 	("gnu" . "http://elpa.gnu.org/packages/")))
 
-(unless package-archive-contents
+(ignore-errors 
   (package-initialize)
   (package-refresh-contents))
-
-(add-hook 'after-init-hook 'package-initialize)
 #+END_SRC
 
 *** Quelpa

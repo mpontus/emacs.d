@@ -194,7 +194,7 @@ Change default emacs appearance
 (setq initial-frame-alist '((fullscreen . maximized)))
 #+end_src
 
-** Winner mode
+** Window Management
 
 Winner mode provides undo history for window configuration.
 

@@ -556,10 +556,17 @@ Enable completion support for Flow files:
 
 ** Typescript 
 
-Testing TIDE
+Install typescript mode:
 
 #+BEGIN_SRC emacs-lisp
-(package-install 'tide)
+(package-install 'typescript-mode)
+
+;; Add .tsx to the list of extensions associated with typescript-mode
+(add-to-list 'auto-mode-alist
+             '("\\.tsx\\'" . typescript-mode))
+
+;; Change default indent
+(setq-default typescript-indent-level 2)
 #+END_SRC
 
 Enable auto-pairing:
@@ -569,36 +576,48 @@ Enable auto-pairing:
 (add-hook 'typescript-mode-hook #'electric-indent-local-mode)
 #+END_SRC
 
-Add prettier support:
+Add binaries from node_modules to PATH:
 
 #+BEGIN_SRC emacs-lisp
-(package-install 'prettier-js)
-
-(add-hook 'typescript-mode-hook 'prettier-js-mode)
-
-;; Use prettier executable from node_modules
-(package-install 'add-node-modules-path)
-
-(add-hook 'prettier-js-mode-hook 'add-node-modules-path)
-#+END_SRC
-
-Add eslint checking:
-
-#+BEGIN_SRC emacs-lisp
-(package-install 'flycheck)
-
-(add-hook 'typescript-mode-hook
-	  (defun setup-typescript-flycheck ()
-	    (flycheck-mode 1)
-	    ;; Unless explicitly told flycheck can choose other
-	    ;; checker which will mess up the chain setup below
-	    (setq-local flycheck-checker 'typescript-tslint)))
-
-
-;; Use eslint executable from node_modules
 (package-install 'add-node-modules-path)
 
 (add-hook 'typescript-mode-hook 'add-node-modules-path)
+#+END_SRC
+
+Setup TIDE:
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'tide)
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1))
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+#+END_SRC
+
+Enable flycheck in typescript buffers:
+
+#+BEGIN_SRC emacs-lisp
+;; (package-install 'flycheck)
+
+;; (defun setup-typescript-flycheck ()
+;; 	    (flycheck-mode 1)
+;; 	    ;; Unless explicitly told flycheck can choose other
+;; 	    ;; checker which will mess up the chain setup below
+;; 	    (setq-local flycheck-checker 'typescript-tslint)
+
+;; 	    ;; Use TIDE checker to report compile errors
+;; 	    (flycheck-add-next-checker 'typescript-tslint 'typescript-tide))
+
+;; (add-hook 'typescript-mode-hook #'setup-typescript-flycheck 'append)
 
 ;; Set up flycheck keybindings
 (with-eval-after-load "typescript-mode"
@@ -626,6 +645,14 @@ Add shortcut for ~tslint --fix~:
 
 (with-eval-after-load "typescript-mode"
   (define-key typescript-mode-map (kbd "C-c r") 'tslint-fix-file-and-revert))
+#+END_SRC
+
+Enable prettier:
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'prettier-js)
+
+(add-hook 'typescript-mode-hook 'prettier-js-mode)
 #+END_SRC
 
 * Python

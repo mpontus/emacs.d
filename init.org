@@ -419,6 +419,14 @@ Install =ag= to enable some of Projectile's functionality.
 (package-install 'ag)
 #+END_SRC
 
+Install treemacs to navigate between project files:
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'treemacs)
+
+(global-set-key (kbd "C-c t") 'treemacs)
+#+END_SRC
+
 * Emacs Lisp
 
 ** Paredit

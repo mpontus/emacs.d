@@ -196,6 +196,14 @@ Change default emacs appearance
 
 ** Window Management
 
+Switch between windows with M-<n>:
+
+#+BEGIN_SRC emacs-lisp
+(quelpa '(window-number :fetcher github :repo "mpontus/window-number.el"))
+
+(window-number-mode)
+#+END_SRC
+
 Winner mode provides undo history for window configuration.
 
 #+BEGIN_SRC emacs-lisp

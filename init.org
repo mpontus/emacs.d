@@ -606,6 +606,28 @@ Add eslint checking:
   (define-key typescript-mode-map (kbd "M-n") 'flycheck-next-error))
 #+END_SRC
 
+Add shortcut for ~tslint --fix~:
+
+#+BEGIN_SRC emacs-lisp
+(defun tslint-fix-file ()
+  "Tslint fix file."
+  (interactive)
+  (message (concat "tslint --fixing the file " (buffer-file-name)))
+  (shell-command (concat "tslint --fix " (buffer-file-name))))
+
+(defun tslint-fix-file-and-revert ()
+  "Format the current file with TSLint."
+  (interactive)
+  (when (eq major-mode 'typescript-mode)
+    (if (executable-find "tslint")
+	(progn (tslint-fix-file)
+	       (revert-buffer 'ignore-auto 'noconfirm))
+      (message "TSLint not found."))))
+
+(with-eval-after-load "typescript-mode"
+  (define-key typescript-mode-map (kbd "C-c r") 'tslint-fix-file-and-revert))
+#+END_SRC
+
 * Python
 
 Enable electric-pair-mode to surround seleciton with parentheses:

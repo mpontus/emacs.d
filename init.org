@@ -647,52 +647,9 @@ Although TIDE provides formatting capabilities powered by typescript executables
 ** Code Folding
 
 #+BEGIN_SRC emacs-lisp
-(package-install 'origami)
-(package-install 'hydra)
+(add-hook 'typescript-mode-hook 'hs-minor-mode)
 
-;; Hydra is not working
-(defhydra origami-hydra (:hint nil)
-  "
-     ^Basic^               ^All^            ^Movement^           ^History^ 
-------------------- ------------------- ------------------- ------------------- 
-[_o_] Open          [_O_] Open All      [_p_] Previous      [_C-/_] Undo
-[_c_] Close         [_C_] Close All     [_n_] Next          [_C-S-/_] Redo
-[_t_] Toggle        [_T_] Toggle All    [_ _] Forward       [_r_] Reset
-[_s_] Show     	    [_S_] Show Only     [_f_] Forward Same  ^ ^
-^ ^                 ^ ^                 [_b_] Backward Same ^ ^
-"
-  ("o" origami-open-node :exit t)
-  ("c" origami-close-node :exit t)
-  ("t" origami-toggle-node :exit t)
-  ("s" origami-show-node :exit t)
-
-  ;; ("" origami-open-node-recursively)
-  ;; ("" origami-close-node-recursively)
-  ;; ("" origami-recursively-toggle-node)
-  ;; ("" origami-forward-toggle-node)
-
-  ;; All
-  ("O" origami-open-all-nodes :exit t)
-  ("C" origami-close-all-nodes :exit t)
-  ("T" origami-toggle-all-nodes :exit t)
-  ("S" origami-show-only-node :exit t)
-
-  ;; Movement
-  ("p" origami-previous-fold)
-  ("n" origami-next-fold)
-  (" " origami-forward-fold)
-  ("f" origami-forward-fold-same-level)
-  ("b" origami-backward-fold-same-level)
-
-  ;; History
-  ("C-/" origami-undo)
-  ("C-S-/" origami-redo)
-  ("r" origami-reset :exit t))
-
-(add-hook 'typescript-mode-hook 'origami-mode)
-
-(define-key typescript-mode-map (kbd "C-c C-f") 'origami-toggle-node)
-(define-key typescript-mode-map (kbd "C-c f") 'origami-hydra/body)
+(define-key typescript-mode-map (kbd "C-c C-f") 'hs-toggle-hiding)
 #+END_SRC
 
 * Python

@@ -185,7 +185,7 @@ Change default emacs appearance
 (unless (eq window-system 'mac)
   (menu-bar-mode -1))
 
-(set-frame-font "DejaVu Sans Mono-10" 'keep-size t)
+(set-frame-font "DejaVu Sans Mono-12" 'keep-size t)
 
 ;; Leuven is a light theme with supporting many modes
 (load-theme 'leuven 'no-confirm)

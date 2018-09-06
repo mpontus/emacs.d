@@ -211,7 +211,16 @@ Winner mode provides undo history for window configuration.
 
 (global-set-key (kbd "C-x w C-/") 'winner-undo)
 (global-set-key (kbd "C-x w C-?") 'winner-redo)
+#+END_SRC
 
+** Shell
+
+Shell-pop allows opening a shell in the current directory:
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'shell-pop)
+
+(global-set-key (kbd "C-'") 'shell-pop)
 #+END_SRC
 
 ** Undo Tree

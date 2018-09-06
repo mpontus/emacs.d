@@ -194,6 +194,18 @@ Change default emacs appearance
 (setq initial-frame-alist '((fullscreen . maximized)))
 #+end_src
 
+Show line numbers in programming modes:
+
+#+BEGIN_SRC emacs-lisp
+(defun setup-line-numbers ()
+  ;; Use native line-numbers available in Emacs 26+
+  (setq-local display-line-numbers t)
+  ;; Disable line wrap when line numbers are shown
+  (setq-local truncate-lines t))
+
+(add-hook 'prog-mode-hook #'setup-line-numbers)
+#+END_SRC
+
 ** Window Management
 
 Switch between windows with M-<n>:

@@ -485,7 +485,6 @@ I often need to sort lines in alphabetical order when working with Javascript.
   (define-key js-mode-map (kbd "C-c s") 'sort-lines))
 #+END_SRC
 
-
 ** Formatting
 
 Prettier-emacs automatically formats code on save.
@@ -554,7 +553,13 @@ Enable completion support for Flow files:
 (add-hook 'js-mode-hook 'flow-completion-at-point-mode)
 #+END_SRC
 
-** Typescript 
+* Typescript 
+
+Typescript is a language that compiles to javascript.
+
+Typescript support in emacs is pretty solid thanks to [TypeScript Mode](https://github.com/ananthakumaran/typescript.el), which enables syntax highlighting and indentation, and [Typescript Interactive Development Environment](https://github.com/ananthakumaran/tide) which provides integration with typescript server.
+
+** Basic Editing Support
 
 Install typescript mode:
 
@@ -564,8 +569,11 @@ Install typescript mode:
 ;; Add .tsx to the list of extensions associated with typescript-mode
 (add-to-list 'auto-mode-alist
              '("\\.tsx\\'" . typescript-mode))
+#+END_SRC
 
-;; Change default indent
+Change default indentation level:
+
+#+BEGIN_SRC emacs-lisp
 (setq-default typescript-indent-level 2)
 #+END_SRC
 
@@ -576,19 +584,14 @@ Enable auto-pairing:
 (add-hook 'typescript-mode-hook #'electric-indent-local-mode)
 #+END_SRC
 
-Add binaries from node_modules to PATH:
-
-#+BEGIN_SRC emacs-lisp
-(package-install 'add-node-modules-path)
-
-(add-hook 'typescript-mode-hook 'add-node-modules-path)
-#+END_SRC
+** TypeScript Server integraiton
 
 Setup TIDE:
 
 #+BEGIN_SRC emacs-lisp
 (package-install 'tide)
 
+;; Working setup taken directly from TIDE documentaiton
 (defun setup-tide-mode ()
   (interactive)
   (tide-setup)
@@ -603,48 +606,15 @@ Setup TIDE:
 Enable flycheck in typescript buffers:
 
 #+BEGIN_SRC emacs-lisp
-;; (package-install 'flycheck)
-
-;; (defun setup-typescript-flycheck ()
-;; 	    (flycheck-mode 1)
-;; 	    ;; Unless explicitly told flycheck can choose other
-;; 	    ;; checker which will mess up the chain setup below
-;; 	    (setq-local flycheck-checker 'typescript-tslint)
-
-;; 	    ;; Use TIDE checker to report compile errors
-;; 	    (flycheck-add-next-checker 'typescript-tslint 'typescript-tide))
-
-;; (add-hook 'typescript-mode-hook #'setup-typescript-flycheck 'append)
-
 ;; Set up flycheck keybindings
-(with-eval-after-load "typescript-mode"
-  (define-key typescript-mode-map (kbd "M-p") 'flycheck-previous-error)
-  (define-key typescript-mode-map (kbd "M-n") 'flycheck-next-error))
+(with-eval-after-load "tide"
+  (define-key tide-mode-map (kbd "M-p") 'flycheck-previous-error)
+  (define-key tide-mode-map (kbd "M-n") 'flycheck-next-error))
 #+END_SRC
 
-Add shortcut for ~tslint --fix~:
+** Formatting
 
-#+BEGIN_SRC emacs-lisp
-(defun tslint-fix-file ()
-  "Tslint fix file."
-  (interactive)
-  (message (concat "tslint --fixing the file " (buffer-file-name)))
-  (shell-command (concat "tslint --fix " (buffer-file-name))))
-
-(defun tslint-fix-file-and-revert ()
-  "Format the current file with TSLint."
-  (interactive)
-  (when (eq major-mode 'typescript-mode)
-    (if (executable-find "tslint")
-	(progn (tslint-fix-file)
-	       (revert-buffer 'ignore-auto 'noconfirm))
-      (message "TSLint not found."))))
-
-(with-eval-after-load "typescript-mode"
-  (define-key typescript-mode-map (kbd "C-c r") 'tslint-fix-file-and-revert))
-#+END_SRC
-
-Enable prettier:
+Although TIDE provides formatting capabilities powered by typescript executables, they do not handle formatting as well as ~prettier~.
 
 #+BEGIN_SRC emacs-lisp
 (package-install 'prettier-js)

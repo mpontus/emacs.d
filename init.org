@@ -649,7 +649,8 @@ Although TIDE provides formatting capabilities powered by typescript executables
 #+BEGIN_SRC emacs-lisp
 (add-hook 'typescript-mode-hook 'hs-minor-mode)
 
-(define-key typescript-mode-map (kbd "C-c C-f") 'hs-toggle-hiding)
+(with-eval-after-load "typescript-mode"
+  (define-key typescript-mode-map (kbd "C-c C-f") 'hs-toggle-hiding))
 #+END_SRC
 
 * Python

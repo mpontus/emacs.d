@@ -206,7 +206,7 @@ Show line numbers in programming modes:
   ;; Disable line wrap when line numbers are shown
   (setq-local truncate-lines t))
 
-(add-hook 'prog-mode-hook #'setup-line-numbers)
+(add-hook 'prog-mode-hook 'setup-line-numbers)
 #+END_SRC
 
 ** Window Management
@@ -454,8 +454,8 @@ I use simple JS mode for now beacuse it's easier to get into when something goes
 Enable automatic pairing and alignment of parentheses and braces:
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'js-mode-hook #'electric-pair-local-mode)
-(add-hook 'js-mode-hook #'electric-indent-local-mode)
+(add-hook 'js-mode-hook 'electric-pair-local-mode)
+(add-hook 'js-mode-hook 'electric-indent-local-mode)
 #+END_SRC
 
 Enable CamelCased word recognition:
@@ -568,8 +568,8 @@ Change default indentation level:
 Enable auto-pairing:
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'typescript-mode-hook #'electric-pair-local-mode)
-(add-hook 'typescript-mode-hook #'electric-indent-local-mode)
+(add-hook 'typescript-mode-hook 'electric-pair-local-mode)
+(add-hook 'typescript-mode-hook 'electric-indent-local-mode)
 #+END_SRC
 
 Fix comment continuation with <kbd>M-j</kbd>
@@ -606,7 +606,7 @@ Setup TIDE:
 ;; Disable tide autoformat if prettier is available
 (remove-hook 'before-save-hook 'tide-format-before-save)
 
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
+(add-hook 'typescript-mode-hook 'setup-tide-mode)
 #+END_SRC
 
 Enable flycheck in typescript buffers:
@@ -642,7 +642,7 @@ Although TIDE provides formatting capabilities powered by typescript executables
 Enable electric-pair-mode to surround seleciton with parentheses:
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'python-mode-hook #'electric-pair-local-mode)
+(add-hook 'python-mode-hook 'electric-pair-local-mode)
 #+END_SRC
 
 * Markdown

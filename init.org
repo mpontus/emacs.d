@@ -603,6 +603,15 @@ Enable auto-pairing:
 (add-hook 'typescript-mode-hook #'electric-indent-local-mode)
 #+END_SRC
 
+Fix comment continuation with <kbd>M-j</kbd>
+
+Pressing <kbd>M-j</kbd> while inside a multiline comment allows you to insert a line break into the comment block. I find that `c-indent-new-comment-line` does better job than `indent-new-comment-line` in `js-mode`.
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "typescript-mode"
+  (define-key typescript-mode-map (kbd "M-j") 'c-indent-new-comment-line))
+#+END_SRC
+
 ** TypeScript Server integraiton
 
 Setup TIDE:

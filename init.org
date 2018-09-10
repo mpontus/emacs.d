@@ -278,6 +278,14 @@ Entry point is <kbd>C-c m</kbd>
 (global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
 #+END_SRC
 
+** Subword Mode
+
+=subword-mode= enables emacs to treat each part of camel-cased experession as a separate word.
+
+#+BEGIN_SRC emacs-lisp
+(global-subword-mode 1)
+#+END_SRC
+
 ** Editorconfig
 
 Add support for .editorconfig files to infer per-project code style settings.
@@ -458,12 +466,6 @@ Enable automatic pairing and alignment of parentheses and braces:
 (add-hook 'js-mode-hook 'electric-indent-local-mode)
 #+END_SRC
 
-Enable CamelCased word recognition:
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'javascript-mode-hook 'subword-mode)
-#+END_SRC
-
 ** Custom keybindings
 
 I often need to sort lines in alphabetical order when working with Javascript.
@@ -579,12 +581,6 @@ Pressing <kbd>M-j</kbd> while inside a multiline comment allows you to insert a 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "typescript-mode"
   (define-key typescript-mode-map (kbd "M-j") 'c-indent-new-comment-line))
-#+END_SRC
-
-Enable CamelCased word recognition:
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'typescript-mode-hook 'subword-mode)
 #+END_SRC
 
 ** TypeScript Server integraiton

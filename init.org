@@ -624,6 +624,24 @@ Although TIDE provides formatting capabilities powered by typescript executables
 (add-hook 'typescript-mode-hook 'prettier-js-mode)
 #+END_SRC
 
+** Auto fix
+
+Some tslint errors are annoying to fix manually.
+
+#+BEGIN_SRC emacs-lisp
+(defun tslint-fix-and-revert ()
+  (interactive)
+  (when (or (not (buffer-modified-p))
+	    ;; Ask for confirmation when reverting modified buffer
+	    (yes-or-no-p (format "Revert buffer from file %s? "
+                                 (buffer-file-name))))
+    (shell-command (concat "tslint --fix " (buffer-file-name)))
+    (revert-buffer nil 'noconfirm)))
+
+(with-eval-after-load "typescript-mode"
+ (define-key typescript-mode-map (kbd "C-c C-r") 'tslint-fix-and-revert))
+#+END_SRC
+
 ** Code Folding
 
 #+BEGIN_SRC emacs-lisp

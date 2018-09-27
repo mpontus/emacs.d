@@ -696,6 +696,20 @@ Enable spell checking.
 (add-hook 'markdown-mode-hook 'flyspell-mode)
 #+END_SRC
 
+* REST Client
+
+Useful for testing REST api.
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'restclient)
+
+(defun configure-restclient ()
+  (setq tab-width 2))
+
+(with-eval-after-load "restclient"
+  (add-hook 'restclient-mode-hook 'configure-restclient))
+#+END_SRC
+
 * Bolt
 
 Bolt is a language for schema modeleing in firebase.

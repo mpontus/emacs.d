@@ -708,6 +708,64 @@ Enable spell checking.
 (add-hook 'markdown-mode-hook 'flyspell-mode)
 #+END_SRC
 
+* OCaml
+
+Install tuareg-mode - a language support for ocaml.
+
+#+BEGIN_SRC emacs-lisp
+(use-package tuareg)
+#+END_SRC
+
+Install ocp-indent for better indentation.
+
+#+BEGIN_SRC emacs-lisp
+(use-package ocp-indent
+  :if (executable-find "ocp-indent")
+  :hook (tuareg-mode . ocp-setup-indent))
+#+END_SRC
+
+Install Merlin for language server integraiton:
+
+#+BEGIN_SRC emacs-lisp
+(use-package merlin
+  :hook (tuareg-mode . merlin-mode)
+  :config
+  ;; Enable jump-to-definition functionality when merlin mode is active
+  (defun install-merlin-xref-backend ()
+    (add-hook 'xref-backend-functions 'merlin-xref-backend nil t))
+  (add-hook 'merlin-mode-hook 'install-merlin-xref-backend))
+
+;; Install merlin-eldoc for minibuffer tooltips
+(use-package merlin-eldoc
+  :hook (merlin-mode . merlin-eldoc-setup))
+#+END_SRC
+
+Enable autocompletion with company-mode:
+
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :requires merlin
+  :hook (tuareg-mode . company-mode))
+#+END_SRC
+
+Enable syntax checking with flycheck-ocaml:
+
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck-ocaml
+  :requires (flycheck merlin)
+  :hook (tuareg-mode . flycheck-ocaml-setup))
+#+END_SRC
+
+Install Utop for REPL.
+
+#+BEGIN_SRC emacs-lisp
+(use-package utop
+  :if (executable-find "opam")
+  :hook (tuareg-mode . utop-minor-mode)
+  :config
+  (setq utop-command "opam config exec -- utop -emacs"))
+#+END_SRC
+
 * REST Client
 
 Useful for testing REST api.

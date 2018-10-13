@@ -358,6 +358,15 @@ Indentation with tabs breaks tags alignment.
             (setq indent-tabs-mode nil)))
 #+END_SRC
 
+* Diary
+
+Trying out jounraling.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'diary-mode-hook 'visual-line-mode)
+(add-hook 'diary-mode-hook 'visual-fill-column-mode)
+#+END_SRC
+
 * Version Control
 
 Configuration for Version Control tools.

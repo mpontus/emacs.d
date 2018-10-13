@@ -25,7 +25,11 @@ Make sure the properties at the top of the file are initialized before evaluatin
 ;; from init.org and evaulates it after init.el gets updated.
 (if (file-newer-than-file-p (expand-file-name "init.org" user-emacs-directory)
 			    (expand-file-name "init.el" user-emacs-directory))
-    (org-babel-load-file (expand-file-name "init.org" user-emacs-directory) t)
+    (progn
+      (org-babel-load-file (expand-file-name "init.org" user-emacs-directory))
+      ;; Byte compile the file separately so that the macros will be
+      ;; set up by the time byte-compilation happens
+      (byte-compile-file (expand-file-name "init.el" user-emacs-directory)))
   <<runtime-configuration>>)
 #+END_SRC
 
@@ -52,6 +56,14 @@ Use package.el to install stable-ish pacakges.
 (ignore-errors 
   (package-initialize)
   (package-refresh-contents))
+#+END_SRC
+
+*** Use Package
+
+Install use-package to support declarative configuraiton.
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'use-package)
 #+END_SRC
 
 *** Quelpa

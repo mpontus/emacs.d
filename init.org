@@ -663,6 +663,16 @@ Some tslint errors are annoying to fix manually.
   (define-key typescript-mode-map (kbd "C-c C-f") 'hs-toggle-hiding))
 #+END_SRC
 
+** Compilation
+
+Colorize tsc messages in ~compilation-mode~:
+
+#+BEGIN_SRC emacs-lisp
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (ansi-color-apply-on-region compilation-filter-start (point-max)))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+#+END_SRC
 * Python
 
 Enable electric-pair-mode to surround seleciton with parentheses:

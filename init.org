@@ -614,11 +614,38 @@ Setup TIDE:
 #+BEGIN_SRC emacs-lisp
 (package-install 'tide)
 
+(with-eval-after-load "flycheck"
+  (flycheck-def-config-file-var typescript-tslint-typecheck-tsconfig
+      typescript-tslint "tsconfig.json"
+    :safe #'stringp
+    :package-version '(flycheck . "27"))
+
+  (flycheck-define-checker typescript-tslint
+    "TypeScript style checker using TSLint.
+
+Note that this syntax checker is not used if
+`flycheck-typescript-tslint-config' is nil or refers to a
+non-existing file.
+
+See URL `https://github.com/palantir/tslint'."
+    :command ("tslint" "--format" "json"
+              (config-file "--config" flycheck-typescript-tslint-config)
+              (config-file "--project" typescript-tslint-typecheck-tsconfig)
+              (option "--rules-dir" flycheck-typescript-tslint-rulesdir)
+	      (eval flycheck-tslint-args)
+              source-original)
+    :error-parser flycheck-parse-tslint
+    :modes (typescript-mode)))
+
+
 ;; Working setup taken directly from TIDE documentaiton
 (defun setup-tide-mode ()
   (interactive)
   (tide-setup)
   (flycheck-mode +1)
+  ;; (add-to-list 'flycheck-checkers 'typescript-tslint-typecheck)
+  ;; (flycheck-add-next-checker 'typescript-tide 'typescript-tslint-typecheck)
+  ;; (add-to-list 'flycheck-disabled-checkers 'typescript-tslint)
   (setq flycheck-check-syntax-automatically '(save mode-enabled))
   (eldoc-mode +1)
   (tide-hl-identifier-mode +1))

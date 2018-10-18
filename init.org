@@ -206,7 +206,10 @@ Change default emacs appearance
 Highlight current line:
 
 #+BEGIN_SRC emacs-lisp
-(global-hl-line-mode t)
+;; Not using global-hl-line-mode because it would could not be
+;; disabled on per-mode basis
+(add-hook 'text-mode-hook 'hl-line-mode)
+(add-hook 'prog-mode-hook 'hl-line-mode)
 #+END_SRC
 
 Show line numbers in programming modes:
@@ -696,6 +699,15 @@ Adjust base indentaiton level:
 
 #+BEGIN_SRC emacs-lisp
 (setq web-mode-css-indent-offset 2)
+#+END_SRC
+
+Disable ~hl-line-mode~ which conflicts with highlighted color literals.
+
+#+BEGIN_SRC emacs-lisp
+(defun disable-hl-line-mode ()
+  (hl-line-mode -1))
+
+(add-hook 'css-mode-hook 'disable-hl-line-mode)
 #+END_SRC
 
 * Python

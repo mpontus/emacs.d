@@ -682,6 +682,22 @@ Colorize tsc messages in ~compilation-mode~:
   (ansi-color-apply-on-region compilation-filter-start (point-max)))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 #+END_SRC
+
+* CSS
+
+Using web-mode for CSS files primarily because it supports comment-continuation with ~M-j~.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist
+             '("\\.css\\'" . web-mode))
+#+END_SRC
+
+Adjust base indentaiton level:
+
+#+BEGIN_SRC emacs-lisp
+(setq web-mode-css-indent-offset 2)
+#+END_SRC
+
 * Python
 
 Enable electric-pair-mode to surround seleciton with parentheses:

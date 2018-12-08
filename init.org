@@ -805,14 +805,7 @@ Enable electric-pair-mode to surround seleciton with parentheses:
 Install markdown mode for syntax highlighting.
 
 #+BEGIN_SRC emacs-lisp
-(use-package markdown-mode
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :config
-  (setq markdown-command
-	(format "pandoc -c file://%s --from markdown_github -t html5 --mathjax --highlight-style pygments --standalone"
-		(expand-file-name user-emacs-directory "github-pandoc.css"))))
+(package-install 'markdown-mode)
 #+END_SRC
 
 Enable visual-fill-column and visual-line modes for markdown files.

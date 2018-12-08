@@ -703,6 +703,14 @@ See URL `https://github.com/palantir/tslint'."
 (add-hook 'typescript-mode-hook 'setup-tide-mode)
 #+END_SRC
 
+Enable completion support:
+
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load "typescript-mode"
+  (add-hook 'typescript-mode-hook 'company-mode)
+  (define-key typescript-mode-map (kbd "TAB") 'company-indent-or-complete-common))
+#+END_SRC
+
 Enable flycheck in typescript buffers:
 
 #+BEGIN_SRC emacs-lisp

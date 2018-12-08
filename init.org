@@ -326,9 +326,19 @@ Add support for .editorconfig files to infer per-project code style settings.
 
 ** File Management
 
-Dired+ enhances ~dired~ functionality with some useful commands.
+Sort by directories first in Dired listing:
 
-Namely, I use it to perform search-and-replace on filenames thanks to ~diredp-insert-subdirs-recursive~.
+#+BEGIN_SRC emacs-lisp
+(use-package ls-lisp
+  :config
+  (setq ls-lisp-dirs-first t)
+  ;; Force dired to use emacs-lisp ls implementation
+  (setq ls-lisp-use-insert-directory-program nil))
+#+END_SRC
+
+Dired+ enhances dired functionality with some useful commands.
+
+Namely, I use it to perform search-and-replace on filenames thanks to diredp-insert-subdirs-recursive.
 
 #+BEGIN_SRC emacs-lisp
 (quelpa '(dired+ :fetcher github :repo "emacsmirror/dired-plus"))
@@ -446,12 +456,36 @@ Install =ag= to enable some of Projectile's functionality.
 (package-install 'ag)
 #+END_SRC
 
-Install treemacs to navigate between project files:
+Show file tree using dired sidebar:
 
 #+BEGIN_SRC emacs-lisp
-(package-install 'treemacs)
+(use-package vscode-icon
+  :ensure t
+  :config
+  ;; Apparently emacs can't resize images despite having been compiled
+  ;; with imagemagic support.
+  (advice-add 'vscode-icon-can-scale-image-p :override 'ignore))
 
-(global-set-key (kbd "C-c t") 'treemacs)
+(use-package dired-sidebar
+  :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
+  :requires vscode-icon
+  :ensure t
+  :commands (dired-sidebar-toggle-sidebar)
+  :init
+  (add-hook 'dired-sidebar-mode-hook
+            (lambda ()
+              (unless (file-remote-p default-directory)
+                (auto-revert-mode))))
+  :config
+
+  (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
+  (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
+
+  (setq dired-sidebar-subtree-line-prefix "__")
+  (setq dired-sidebar-icon-scale 0.1)
+  (setq dired-sidebar-theme 'vscode)
+  (setq dired-sidebar-use-term-integration t)
+  (setq dired-sidebar-use-custom-font t))
 #+END_SRC
 
 * Emacs Lisp

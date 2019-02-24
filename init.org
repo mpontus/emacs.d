@@ -256,6 +256,12 @@ Winner mode provides undo history for window configuration.
 (global-set-key (kbd "C-x w C-?") 'winner-redo)
 #+END_SRC
 
+It's easier to use Super+ESC to switch between frames on HHKB:
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<s-escape>") 'other-frame)
+#+END_SRC
+
 ** Shell
 
 Shell-pop allows opening a shell in the current directory:

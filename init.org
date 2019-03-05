@@ -58,21 +58,6 @@ Use package.el to install stable-ish pacakges.
   (package-refresh-contents))
 #+END_SRC
 
-*** Use Package
-
-Install use-package to support declarative configuraiton.
-
-#+BEGIN_SRC emacs-lisp
-(package-install 'use-package)
-#+END_SRC
-
-Initialize `bind-key` because some packages will complain about `personal-keybindings` being undefined.
-
-#+BEGIN_SRC emacs-lisp
-(use-package bind-key
-  :ensure t)
-#+END_SRC
-
 *** Quelpa
 
 Quelpa helps install packages which have yet to be published to melpa.
@@ -89,6 +74,35 @@ Install quelpa adapter for use-package:
 
 #+BEGIN_SRC emacs-lisp
 (package-install 'quelpa-use-package)
+#+END_SRC
+
+*** Use Package
+
+Install use-package to support declarative configuraiton.
+
+#+BEGIN_SRC emacs-lisp
+(package-install 'use-package)
+#+END_SRC
+
+Install quelpa support for use-package:
+
+#+BEGIN_SRC emacs-lisp
+(quelpa
+ '(quelpa-use-package
+   :fetcher git
+   :url "https://framagit.org/steckerhalter/quelpa-use-package.git"))
+
+;; Use quelpa to install packages
+(setq use-package-ensure-function 'quelpa)
+
+(require 'quelpa-use-package)   
+#+END_SRC
+
+Initialize `bind-key` because some packages will complain about `personal-keybindings` being undefined.
+
+#+BEGIN_SRC emacs-lisp
+(use-package bind-key
+  :ensure t)
 #+END_SRC
 
 ** Better defaults

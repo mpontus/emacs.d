@@ -404,6 +404,15 @@ Indentation with tabs breaks tags alignment.
             (setq indent-tabs-mode nil)))
 #+END_SRC
 
+* Anki
+
+I save notes in org files and export them as Anki decks to be able to review them easily later on.
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-anki
+  :quelpa (org-anki :fetcher "github" :repo "mpontus/org-anki"))
+#+END_SRC
+
 * Diary
 
 Trying out jounraling.

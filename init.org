@@ -865,6 +865,33 @@ Enable spell checking.
 (add-hook 'markdown-mode-hook 'flyspell-mode)
 #+END_SRC
 
+* Clojure
+
+Install clojure-mode
+
+#+BEGIN_SRC emacs-lisp
+(use-package clojure-mode
+  :ensure t)
+#+END_SRC
+
+Use Lispy to navigate clojure code
+
+#+BEGIN_SRC emacs-lisp
+(use-package lispy
+  :ensure t
+  :hook (clojure-mode . lispy-mode))
+#+END_SRC
+
+Add userful clojure commands
+
+#+BEGIN_SRC emacs-lisp
+(use-package cider
+  :ensure t
+  :hook (clojure-mode . cider-mode)
+  :config
+  (setq cider-clojure-cli-global-options "-R:fig"))
+#+END_SRC
+
 * OCaml
 
 Install tuareg-mode - a language support for ocaml.

@@ -70,12 +70,6 @@ I use it to install my own packages.
 (quelpa-self-upgrade)
 #+END_SRC
 
-Install quelpa adapter for use-package:
-
-#+BEGIN_SRC emacs-lisp
-(package-install 'quelpa-use-package)
-#+END_SRC
-
 *** Use Package
 
 Install use-package to support declarative configuraiton.
@@ -87,15 +81,10 @@ Install use-package to support declarative configuraiton.
 Install quelpa support for use-package:
 
 #+BEGIN_SRC emacs-lisp
-(quelpa
- '(quelpa-use-package
-   :fetcher git
-   :url "https://framagit.org/steckerhalter/quelpa-use-package.git"))
-
-;; Use quelpa to install packages
-(setq use-package-ensure-function 'quelpa)
-
-(require 'quelpa-use-package)   
+(use-package quelpa-use-package
+  :require quelpa
+  :ensure t
+  :config (setq use-package-ensure-function 'quelpa))
 #+END_SRC
 
 Initialize `bind-key` because some packages will complain about `personal-keybindings` being undefined.

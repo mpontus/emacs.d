@@ -972,6 +972,22 @@ Install Utop for REPL.
   (setq utop-command "opam config exec -- utop -emacs"))
 #+END_SRC
 
+* Rust
+
+Use ~rust-mode~ for syntax highlighting.
+
+#+BEGIN_SRC emacs-lisp
+(use-package rust-mode)
+#+END_SRC
+
+Use ~racer~ for autocompletion in rust files
+
+#+BEGIN_SRC emacs-lisp
+(use-package racer
+  :requires company
+  :hook (rust-mode . racer-mode))
+#+END_SRC
+
 * REST Client
 
 Useful for testing REST api.

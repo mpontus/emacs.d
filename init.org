@@ -78,6 +78,13 @@ Install use-package to support declarative configuraiton.
 (package-install 'use-package)
 #+END_SRC
 
+Automatically ensure that all packages are installed:
+
+#+BEGIN_SRC emacs-lisp
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
+#+END_SRC
+
 Install quelpa support for use-package:
 
 #+BEGIN_SRC emacs-lisp

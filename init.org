@@ -865,6 +865,18 @@ Install markdown mode for syntax highlighting.
 (package-install 'markdown-mode)
 #+END_SRC
 
+Enable syntax highlighting in code blocks.
+
+#+BEGIN_SRC emacs-lisp
+(setq-default markdown-fontify-code-blocks-natively t)
+#+END_SRC
+
+Use spaces instead of tabs
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'markdown-mode-hook (lambda () (setq indent-tabs-mode nil)))
+#+END_SRC
+
 Enable visual-fill-column and visual-line modes for markdown files.
 
 Visual-fill-colums ensures long lines are broken up at regular intervals to make text more readable.

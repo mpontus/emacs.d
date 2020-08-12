@@ -1059,3 +1059,29 @@ Bolt is a language for schema modeleing in firebase.
 #+END_SRC
 
 
+* Terraform
+
+Enable syntax highlighting for terraform mode
+
+#+BEGIN_SRC emacs-lisp
+(use-package terraform-mode)
+
+(use-package hcl-mode
+  :quelpa
+  (hcl-mode :fetcher github :repo "mpontus/emacs-hcl-mode"))
+#+END_SRC
+
+*** LSP
+
+Enable autocompletion using LSP
+
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode
+  :hook terraform-mode
+  :config
+  (add-to-list 'lsp-language-id-configuration '(terraform-mode . "terraform"))
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("~/terraform-ls" "serve"))
+		    :major-modes '(terraform-mode)
+		    :server-id 'terraform-ls)))
+#+END_SRC

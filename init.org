@@ -568,6 +568,13 @@ Enable flycheck in emacs lisp buffers for package authoring.
 (define-key emacs-lisp-mode-map (kbd "M-p") 'previous-error)
 #+END_SRC
 
+** Macro expansion
+
+#+BEGIN_SRC emacs-lisp
+(use-package macrostep
+  :bind ("C-c e" . macrostep-expand))
+#+END_SRC
+
 * Javascript
 
 Set up tools for working with JavaScript code.

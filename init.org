@@ -392,6 +392,22 @@ Passwords and authentication credentials are stored in [[./secrets.el.gpg]]
     (load-file secrets-file)))
 #+END_SRC
 
+** Completion
+
+Configure company-mode
+
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :config
+  (define-key company-mode-map (kbd "TAB") #'company-indent-or-complete-common))
+#+END_SRC
+
+** Language Server Protocol
+
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode)
+#+END_SRC
+
 * Org Mode
 
 Install latest org mode from org repo.

@@ -378,13 +378,18 @@ Make EasyPG query pass phrase using minibuffer:
 Additional configuraiton not inluded in this file is stored in [[./custom.el]]
 
 #+BEGIN_SRC emacs-lisp
-(load-file (expand-file-name "custom.el" user-emacs-directory))
+(let ((custom-file (expand-file-name "custom.el" user-emacs-directory)))
+  (unless (file-exists-p custom-file)
+    (write-region "" nil custom-file)
+  (load-file custom-file)))
 #+END_SRC
 
 Passwords and authentication credentials are stored in [[./secrets.el.gpg]]
 
 #+BEGIN_SRC emacs-lisp
-(load-file (expand-file-name "secrets.el.gpg" user-emacs-directory))
+(let ((secrets-file (expand-file-name "secrets.el.gpg" user-emacs-directory)))
+  (when (file-exists-p secrets-file)
+    (load-file secrets-file)))
 #+END_SRC
 
 * Org Mode

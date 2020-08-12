@@ -201,8 +201,7 @@ Emacs must infer $PATH from the shell configuration.
 #+BEGIN_SRC emacs-lisp
 (package-install 'exec-path-from-shell)
 
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
+(exec-path-from-shell-initialize)
 #+END_SRC
 
 ** Display

@@ -94,8 +94,9 @@ I use it to install my own packages.
 Install quelpa support for use-package:
 
 #+BEGIN_SRC emacs-lisp
-(use-package quelpa-use-package
-  :config (quelpa-use-package-activate-advice))
+(eval-and-compile
+  (use-package quelpa-use-package
+    :config (quelpa-use-package-activate-advice)))
 #+END_SRC
 
 ** Better defaults

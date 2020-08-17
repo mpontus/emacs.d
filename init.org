@@ -441,6 +441,18 @@ Indentation with tabs breaks tags alignment.
             (setq indent-tabs-mode nil)))
 #+END_SRC
 
+** REST client
+
+Install restclient executor to test HTTP queries in org-mode file
+
+#+BEGIN_SRC emacs-lisp
+(use-package ob-restclient
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((restclient . t))))
+#+END_SRC
+
 * Anki
 
 I save notes in org files and export them as Anki decks to be able to review them easily later on.

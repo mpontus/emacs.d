@@ -343,6 +343,7 @@ Sort by directories first in Dired listing:
 
 #+BEGIN_SRC emacs-lisp
 (use-package ls-lisp
+  :ensure nil
   :config
   (setq ls-lisp-dirs-first t)
   ;; Force dired to use emacs-lisp ls implementation

@@ -1117,6 +1117,55 @@ Useful for testing REST api.
   (add-hook 'restclient-mode-hook 'configure-restclient))
 #+END_SRC
 
+* XML
+
+** Folding
+
+#+begin_src emacs-lisp
+(defun hs-toggle-block ()
+  "Toggle hideshow all."
+  (interactive)
+  (if (hs-already-hidden-p) (hs-show-block) (hs-hide-block)))
+
+(defun hs-toggle-level ()
+  "Toggle hideshow all."
+  (interactive)
+  (save-excursion
+    (let (minp maxp (all-shown t))
+      (when (hs-find-block-beginning)
+	  (setq minp (1+ (point)))
+	  (funcall hs-forward-sexp-func 1)
+	  (setq maxp (1- (point)))
+	  (goto-char minp))
+	(while (progn
+		 (forward-comment (buffer-size))
+		 (and (< (point) maxp)
+                      (re-search-forward hs-block-start-regexp maxp t)))
+	  (when (save-match-data (not (nth 8 (syntax-ppss)))) ; not inside comments or strings
+	    (setq all-shown (and all-shown (not (hs-already-hidden-p))))
+	    (hs-show-block)))
+      (when all-shown
+	(goto-char minp)
+	(hs-hide-level-recursive 1 minp maxp)))))
+
+(use-package hideshow
+  :bind
+  ("M-ESC" . hs-toggle-block)
+  ("C-M-{" . hs-hide-all)
+  ("C-M-]" . hs-toggle-level)
+  ("C-M-}" . hs-show-all)
+  :config
+  (add-hook 'nxml-mode 'hs-minor-mode)
+  (add-to-list 'hs-special-modes-alist
+               '(nxml-mode
+		 "<!--\\|<[^/>]*[^/]>"
+		 "-->\\|</[^/>]*[^/]>"
+
+		 "<!--"
+		 sgml-skip-tag-forward
+		 nil)))
+#+end_src
+
 * Bolt
 
 Bolt is a language for schema modeleing in firebase.

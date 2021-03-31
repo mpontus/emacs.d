@@ -479,6 +479,18 @@ Install restclient executor to test HTTP queries in org-mode file
    '((restclient . t))))
 #+END_SRC
 
+** HTTP client
+
+Install restclient executor to test HTTP queries in org-mode file
+
+#+BEGIN_SRC emacs-lisp
+(use-package ob-http
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((http . t))))
+#+END_SRC
+
 * Anki
 
 I save notes in org files and export them as Anki decks to be able to review them easily later on.

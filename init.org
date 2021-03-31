@@ -523,6 +523,12 @@ Magit is a Git interface for emacs. It helps tremendously with partial commits, 
 (global-set-key (kbd "C-x g g") 'magit-status)
 #+END_SRC
 
+*** Make PR links clickable
+
+#+begin_src emacs-lisp
+(add-hook 'magit-process-mode-hook 'goto-address-mode)
+#+end_src
+
 ** Git Timemachine
 
 Git timemachine allows you to quickly review the history of a signle file

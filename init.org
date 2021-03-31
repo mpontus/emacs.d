@@ -9,6 +9,8 @@ This config is bootstrapped by evaluating the source block below (<kbd>C-c C-c</
 
 The file must be saved in `user-emacs-directory` (=~/.emacs.d= by default).
 
+** Bootstrap
+
 Make sure the properties at the top of the file are initialized before evaluating the block.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :noweb-ref none
@@ -24,8 +26,8 @@ Make sure the properties at the top of the file are initialized before evaluatin
 ;; init.el is newer than init.el, otherwise it reinitializes init.el
 ;; from init.org and evaulates it after init.el gets updated.
 (if (file-newer-than-file-p (expand-file-name "init.org" user-emacs-directory)
-			    (expand-file-name "init.el" user-emacs-directory))
-    (progn
+(expand-file-name "init.el" user-emacs-directory))
+    (let ((debug-on-quit t) (debug-on-error t))
       (org-babel-load-file (expand-file-name "init.org" user-emacs-directory))
       ;; Byte compile the file separately so that the macros will be
       ;; set up by the time byte-compilation happens
@@ -35,18 +37,13 @@ Make sure the properties at the top of the file are initialized before evaluatin
 
 ** Package Manager
 
-Emacs package manager setup.
-
-*** Package.el
-
-Use package.el to install stable-ish pacakges.
+Setup builtin package manager.
 
 #+BEGIN_SRC emacs-lisp
 (require 'package)
 
 (setq package-archives
       '(("org" . "https://orgmode.org/elpa/")
-	("marmalade" . "https://marmalade-repo.org/packages/")
 	("melpa" . "https://melpa.org/packages/")
 	("gnu" . "http://elpa.gnu.org/packages/")))
 
@@ -57,24 +54,23 @@ Use package.el to install stable-ish pacakges.
 
 *** Use Package
 
-Install use-package to support declarative configuraiton.
+Enable more convenient configuration for external packages.
 
 #+BEGIN_SRC emacs-lisp
 (package-install 'use-package)
-#+END_SRC
-
-Automatically ensure that all packages are installed:
-
-#+BEGIN_SRC emacs-lisp
-(require 'use-package-ensure)
 (setq use-package-always-ensure t)
 #+END_SRC
 
-Initialize `bind-key` because some packages will complain about `personal-keybindings` being undefined.
+Configure ~use-package~ to always download missing packages.
 
 #+BEGIN_SRC emacs-lisp
-(use-package bind-key
-  :ensure t)
+(setq use-package-always-ensure t)
+#+END_SRC
+
+Initialize ~bind-key~ because some packages will complain about ~personal-keybindings~ being undefined.
+
+#+BEGIN_SRC emacs-lisp
+(use-package bind-key)
 #+END_SRC
 
 *** Quelpa
@@ -95,7 +91,63 @@ Install quelpa support for use-package:
     :config (quelpa-use-package-activate-advice)))
 #+END_SRC
 
+** Maintenance
+
+*** Keybindings
+
+Convenient keybindings
+
+#+begin_src emacs-lisp
+(global-set-key
+ (kbd "C-c i i")
+ (defun find-init-org-file ()
+   "Open init.org from user directory"
+   (interactive
+   (find-file (locate-user-emacs-file "init.org"))))
+#+end_src
+
+Convenient macro for setting up new keybindings.
+
+#+begin_src emacs-lisp
+(use-package general)
+#+end_src
+
+Repeatable key bindings using transient modes.
+
+#+begin_src emacs-lisp
+(use-package 'hydra)
+#+end_src
+
+Get an overview of current keybindings.
+
+#+begin_src emacs-lisp
+(use-package buttons
+  :bind (("<f1>K" . buttons-display)))
+#+end_src
+
+Find which key the command is bound to.
+
+#+begin_src emacs-lisp
+(use-package which-key
+  :config
+  (which-key-mode t)
+  (which-key-setup-side-window-right-bottom)
+  (setq which-key-idle-delay 0
+	which-key-idle-secondary-delay 0)
+  :bind (([f1 f1] . which-key-show-top-level)))
+#+end_src
+
+Find an unused keybinding.
+
+#+begin_src emacs-lisp
+(use-package free-keys :bind ("<f1>B" . free-keys))
+#+end_src
+
+
+* General
+
 ** Better defaults
+SCHEDULED: <2021-03-31 Wed>
 
 Adjust some minor annoyances in default emacs configuration.
 
@@ -153,12 +205,48 @@ Enabling this will complete "tdoe" to "toggle-debug-on-error".
 (add-to-list 'completion-styles 'initials 'append)
 #+END_SRC
 
-Debugger must open in the same frame.
+Open debugger in the same frame.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'display-buffer-alist
 	     '("`\\*Debugger\\*$" display-buffer-same-window))
 #+END_SRC
+
+Make buffer names more readable
+
+#+begin_src emacs-lisp
+(setq uniquify-buffer-name-style 'forward)
+#+end_src
+
+Save buffer position between sessoins.
+
+#+begin_src emacs-lisp
+(save-place-mode 1)
+#+end_src
+
+Load from the source if its more fresh than the compiled code.
+
+#+begin_src emacs-lisp
+(setq load-prefer-newer t)
+#+end_src
+
+Highlight matching paren under cursor 
+
+#+begin_src emacs-lisp
+(show-paren-mode 1)
+#+end_src
+
+Indent with spaces not tabs.
+
+#+begin_src emacs-lisp
+(setq indent-tabs-mode nil)
+#+end_src
+
+End the file with a blank line.
+
+#+begin_src emacs-lisp
+(setq require-final-newline t)
+#+end_src
 
 ** Emacs Server
 
@@ -232,6 +320,13 @@ Change default emacs appearance
 
 ;; Start emacs in fullscreen
 (setq initial-frame-alist '((fullscreen . maximized)))
+#+end_src
+
+Make it easy to adjust text scale in all windows
+
+#+begin_src emacs-lisp
+(use-package default-text-scale
+  :config (default-text-scale-mode t))
 #+end_src
 
 Highlight current line:
@@ -417,6 +512,122 @@ Configure company-mode
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-mode)
 #+END_SRC
+
+** Ivy / Counsel / Swiper
+
+Install ivy with some extensions.
+
+#+begin_src emacs-lisp
+(use-package ivy :bind ("C-c C-c" . ivy-restrict-to-matches))
+#+end_src
+
+Replace Isearch with Swiper, but not inside the minibuffer.
+
+#+begin_src emacs-lisp
+(use-package swiper :bind ("C-c s" . swiper))
+#+end_src
+
+Add various counsel commands:
+
+#+begin_src emacs-lisp
+(use-package counsel 
+  :bind
+  ("C-c M-x" . counsel-M-x)
+  ("C-c c a" . counsel-apropos)
+  ("C-c c b" . counsel-bookmark)
+  ("C-c c c" . counsel-imenu)
+  ("C-c c d b" . counsel-descbinds)
+  ("C-c c d f" . counsel-describe-function)
+  ("C-c c d o" . counsel-describe-face)
+  ("C-c c d v" . counsel-describe-variable)
+  ("C-c c f f" . counsel-find-file)
+  ("C-c c f i" . counsel-info-lookup-symbol)
+  ("C-c c f l" . counsel-find-library)
+  ("C-c c l l" . counsel-load-library)
+  ("C-c c l t" . counsel-load-theme)
+  ("C-c c m" . counsel-mark-ring)
+  ("C-c c o" . counsel-faces)
+  ("C-c c y" . counsel-yank-pop))
+#+end_src
+
+** Keybindings
+
+Define some helper function for persisting keybindings.
+
+#+begin_src emacs-lisp
+(defun locate-misc-keybindings ()
+  "Find `setup-misc-keybindings' macro in init.org"
+  (interactive)
+  (find-file (locate-user-emacs-file "init.org"))
+  (goto-char (point-min))
+  (search-forward "(setup-random-keybindings ")
+  (backward-up-list)
+  (forward-sexp)
+  (backward-char)
+  (newline))
+
+(defalias 'setup-misc-keybindings #'bind-keys)
+#+end_src
+
+Now setup some keybindings
+
+#+begin_src emacs-lisp
+(setup-misc-keybindings
+ ("C-c i k" . locate-misc-keybindings))
+#+end_src
+
+
+
+
+
+Convenient macro for setting up new keybindings.
+
+#+begin_src emacs-lisp
+(use-package general)
+#+end_src
+
+Repeatable key bindings using transient modes.
+
+#+begin_src emacs-lisp
+(use-package 'hydra)
+#+end_src
+
+Get an overview of current keybindings.
+
+#+begin_src emacs-lisp
+(use-package buttons
+  :bind (("<f1>K" . buttons-display)))
+#+end_src
+
+Find which key the command is bound to.
+
+#+begin_src emacs-lisp
+(use-package which-key
+  :config
+  (which-key-mode t)
+  (which-key-setup-side-window-right-bottom)
+  (setq which-key-idle-delay 0
+	which-key-idle-secondary-delay 0)
+  :bind (([f1 f1] . which-key-show-top-level)))
+#+end_src
+
+Find an unused keybinding.
+
+#+begin_src emacs-lisp
+(use-package free-keys :bind ("<f1>B" . free-keys))
+#+end_src
+
+* Elisp
+
+** Debugging
+
+#+begin_src emacs-lisp
+(bind-key "C-c d f" #'debug-on-entry)
+(bind-key "C-c d v" #'debug-on-variable-change)
+(bind-key "C-c d v" #'debug-on-variable-change)
+(bind-key "C-c d e" #'toggle-debug-on-error)
+(bind-key "C-c d q" #'toggle-debug-on-quit)
+#+end_src
 
 * Org Mode
 

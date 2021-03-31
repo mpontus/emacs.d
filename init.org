@@ -3,7 +3,7 @@
 #+STARTUP: showall
 #+PROPERTY: header-args :tangle no :noweb yes :noweb-ref runtime-configuration :results silent
 
-* Install
+* Installation
 
 This config is bootstrapped by evaluating the source block below (<kbd>C-c C-c</kbd>).
 
@@ -32,10 +32,6 @@ Make sure the properties at the top of the file are initialized before evaluatin
       (byte-compile-file (expand-file-name "init.el" user-emacs-directory)))
   <<runtime-configuration>>)
 #+END_SRC
-
-* General
-
-Basic configuration applicable everywhere.
 
 ** Package Manager
 

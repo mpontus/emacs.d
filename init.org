@@ -164,6 +164,21 @@ Debugger must open in the same frame.
 	     '("`\\*Debugger\\*$" display-buffer-same-window))
 #+END_SRC
 
+** Emacs Server
+
+Make it possible to connect to the running emacs instance using ~emacsclient~.
+
+#+begin_src emacs-lisp
+(with-demoted-errors "Error: %S"
+  (server-start))
+#+end_src
+
+When a client connects, bring it up above other programs.
+
+#+begin_src emacs-lisp
+(add-hook 'server-switch-hook #'raise-frame)
+#+end_src
+
 ** Global find file history
 
 Find-file is my primary means for navigating between files, although not the only one.

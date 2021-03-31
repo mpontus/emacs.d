@@ -456,6 +456,17 @@ Indentation with tabs breaks tags alignment.
             (setq indent-tabs-mode nil)))
 #+END_SRC
 
+** Shell
+
+Enable shell source blocks
+
+#+begin_src emacs-lisp
+(org-babel-do-load-languages
+   'org-babel-load-languages
+   '((shell . t)))
+#+end_src
+
+
 ** REST client
 
 Install restclient executor to test HTTP queries in org-mode file

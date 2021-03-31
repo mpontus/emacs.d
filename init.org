@@ -26,13 +26,13 @@ Make sure the properties at the top of the file are initialized before evaluatin
 ;; init.el is newer than init.el, otherwise it reinitializes init.el
 ;; from init.org and evaulates it after init.el gets updated.
 (if (file-newer-than-file-p (expand-file-name "init.org" user-emacs-directory)
-(expand-file-name "init.el" user-emacs-directory))
+			    (expand-file-name "init.el" user-emacs-directory))
     (let ((debug-on-quit t) (debug-on-error t))
       (org-babel-load-file (expand-file-name "init.org" user-emacs-directory))
       ;; Byte compile the file separately so that the macros will be
       ;; set up by the time byte-compilation happens
       (byte-compile-file (expand-file-name "init.el" user-emacs-directory)))
-  <<runtime-configuration>>)
+  <<runtime-configuration>>);;qwe
 #+END_SRC
 
 ** Package Manager
@@ -46,7 +46,7 @@ Setup builtin package manager.
       '(("org" . "https://orgmode.org/elpa/")
 	("melpa" . "https://melpa.org/packages/")
 	("gnu" . "http://elpa.gnu.org/packages/")))
-
+;; hello
 (ignore-errors 
   (package-initialize 'no-activate)
   (package-refresh-contents 'async))
@@ -93,6 +93,27 @@ Install quelpa support for use-package:
 
 ** Maintenance
 
+*** Validation
+
+#+begin_src emacs-lisp
+(defun init-org-validate-syntax ()
+  (interactive)
+  (when (file-equal-p (or (buffer-file-name) "")
+		      (locate-user-emacs-file "init.org"))
+    (org-babel-map-src-blocks nil
+      (save-window-excursion
+	(display-buffer (current-buffer) 'display-buffer-pop-up-window)
+	(save-restriction 
+	  (narrow-to-region (goto-char beg-body) end-body)
+	  (with-syntax-table emacs-lisp-mode-syntax-table
+	    (while (not (eobp))
+	      (and (zerop (skip-chars-forward "\s\t\r\n"))
+		   (null (comment-forward 1))
+		   (read (current-buffer))))))))))
+
+(add-hook 'before-save-hook #'init-org-validate-syntax)
+#+end_src
+
 *** Keybindings
 
 Convenient keybindings
@@ -102,8 +123,9 @@ Convenient keybindings
  (kbd "C-c i i")
  (defun find-init-org-file ()
    "Open init.org from user directory"
+   
    (interactive
-   (find-file (locate-user-emacs-file "init.org"))))
+    (find-file (locate-user-emacs-file "init.org")))))
 #+end_src
 
 Convenient macro for setting up new keybindings.
@@ -355,18 +377,17 @@ Show line numbers in programming modes:
 Switch between windows with M-<n>:
 
 #+BEGIN_SRC emacs-lisp
-(quelpa '(window-number :fetcher github :repo "mpontus/window-number.el"))
-
-(window-number-mode)
+(use-package window-number
+  :quelpa (window-number :fetcher github :repo "mpontus/window-number.el")
+  :config (window-number-mode))
 #+END_SRC
 
 Winner mode provides undo history for window configuration.
 
 #+BEGIN_SRC emacs-lisp
 (winner-mode 1)
-
-(global-set-key (kbd "C-x w C-/") 'winner-undo)
-(global-set-key (kbd "C-x w C-?") 'winner-redo)
+(global-set-key (kbd "C-c C-/") 'winner-undo)
+(global-set-key (kbd "C-c C-?") 'winner-redo)
 #+END_SRC
 
 It's easier to use Super+ESC to switch between frames on HHKB:
@@ -552,34 +573,6 @@ Add various counsel commands:
 
 ** Keybindings
 
-Define some helper function for persisting keybindings.
-
-#+begin_src emacs-lisp
-(defun locate-misc-keybindings ()
-  "Find `setup-misc-keybindings' macro in init.org"
-  (interactive)
-  (find-file (locate-user-emacs-file "init.org"))
-  (goto-char (point-min))
-  (search-forward "(setup-random-keybindings ")
-  (backward-up-list)
-  (forward-sexp)
-  (backward-char)
-  (newline))
-
-(defalias 'setup-misc-keybindings #'bind-keys)
-#+end_src
-
-Now setup some keybindings
-
-#+begin_src emacs-lisp
-(setup-misc-keybindings
- ("C-c i k" . locate-misc-keybindings))
-#+end_src
-
-
-
-
-
 Convenient macro for setting up new keybindings.
 
 #+begin_src emacs-lisp
@@ -615,6 +608,61 @@ Find an unused keybinding.
 
 #+begin_src emacs-lisp
 (use-package free-keys :bind ("<f1>B" . free-keys))
+#+end_src
+
+** Custom Keybindings
+
+Define some helper function for persisting keybindings.
+
+#+begin_src emacs-lisp
+(defun locate-misc-keybindings ()
+  "Find `setup-misc-keybindings' macro in init.org"
+  (interactive)
+  (let ((original-buffer (current-buffer)))
+    ;; (pop-to-buffer-same-window
+    ;;  (find-file-noselect (locate-user-emacs-file "init.org")))
+    (find-file-other-window (locate-user-emacs-file "init.org"))
+    (save-restriction
+      (widen)
+      (goto-char (point-min))
+      (search-forward (format "(%s" 'setup-misc-keybindings))
+      (backward-up-list)
+      (forward-sexp)
+      (backward-char)
+      (delete-char (abs (skip-chars-backward "\s\t\n\r")))
+      (skip-syntax-backward "s")
+      (newline)
+      (save-mark-and-excursion
+	(org-babel-mark-block)
+	(narrow-to-region (region-beginning) (region-end))
+	(lisp-indent-region (point-min) (point-max))))
+    (back-to-indentation)
+    (save-excursion (insert (format "%S" '("" . t))))
+    (save-mark-and-excursion
+      (down-list)
+      (deactivate-mark)
+      (mark-sexp)
+      (let* ((key (read-key-sequence "Bind the following key: "))
+	     (keystr (format-kbd-macro key)))
+	(delete-region (region-beginning) (region-end))
+	(insert (format "%S" keystr))
+	(progn (up-list) (down-list -1) (mark-sexp -1))
+	(let* ((binding (with-current-buffer original-buffer (key-binding key)))
+	       (prompt (format "Bind %S to the following command (default %S): " keystr binding)))
+	  (insert (prog1 (symbol-name (read-command prompt binding))
+		    (delete-region (region-beginning) (region-end)))))))
+    (pp-eval-expression (read (buffer-substring (scan-lists (point) -1 1) (scan-lists (point) 1 1))))
+    (switch-to-buffer original-buffer)))
+
+(defalias 'setup-misc-keybindings #'bind-keys)
+#+end_src
+
+Now setup some keybindings
+
+#+begin_src emacs-lisp
+(setup-misc-keybindings
+ ("C-c i k" . locate-misc-keybindings)
+ ("C-c i p" . list-packages))
 #+end_src
 
 * Elisp
@@ -703,8 +751,8 @@ Install restclient executor to test HTTP queries in org-mode file
 I save notes in org files and export them as Anki decks to be able to review them easily later on.
 
 #+BEGIN_SRC emacs-lisp
-(use-package org-anki
-  :quelpa (org-anki :fetcher "github" :repo "mpontus/org-anki"))
+(use-package org-anki :quelpa
+  (org-anki :fetcher "github" :repo "mpontus/org-anki"))
 #+END_SRC
 
 * Diary
@@ -838,16 +886,25 @@ Show file tree using dired sidebar:
 Paredit helps keeps parentheses ballanced and provides a few useful commands for working with lisp code.
 
 #+BEGIN_SRC emacs-lisp
-(package-install 'paredit)
-
-(add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+(use-package paredit :hook emacs-lisp)
 #+END_SRC
 
 Use paredit in eval-expression mode
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'eval-expression-minibuffer-setup-hook 'paredit-mode)
+(add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
 #+END_SRC
+
+Custom keybindings.
+
+#+begin_src emacs-lisp
+(bind-keys :map paredit-mode-map
+	   ("M-U" . paredit-convolute-sexp)
+	   ("M-H" . paredit-backward-slurp-sexp)
+	   ("M-J" . paredit-forward-slurp-sexp)
+	   ("M-K" . paredit-forward-barf-sexp)
+	   ("M-L" . paredit-backward-barf-sexp))
+#+end_src
 
 ** Flycheck
 

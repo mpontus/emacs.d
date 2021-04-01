@@ -52,6 +52,7 @@ Setup builtin package manager.
   (package-refresh-contents 'async))
 #+END_SRC
 
+
 *** Use Package
 
 Enable more convenient configuration for external packages.
@@ -96,22 +97,24 @@ Install quelpa support for use-package:
 *** Validation
 
 #+begin_src emacs-lisp
-(defun init-org-validate-syntax ()
-  (interactive)
-  (when (file-equal-p (or (buffer-file-name) "")
-		      (locate-user-emacs-file "init.org"))
-    (org-babel-map-src-blocks nil
-      (save-window-excursion
-	(display-buffer (current-buffer) 'display-buffer-pop-up-window)
-	(save-restriction 
-	  (narrow-to-region (goto-char beg-body) end-body)
-	  (with-syntax-table emacs-lisp-mode-syntax-table
+(defun init-org-after-save-hook ()
+  (org-babel-map-src-blocks nil
+    (save-restriction
+      (narrow-to-region (goto-char beg-body) end-body)
+      (with-syntax-table emacs-lisp-mode-syntax-table
+	(condition-case err
 	    (while (not (eobp))
 	      (and (zerop (skip-chars-forward "\s\t\r\n"))
-		   (null (comment-forward 1))
-		   (read (current-buffer))))))))))
+		   (null (forward-comment 1))
+		   (read (current-buffer))))
+	  (t (error "%s" (error-message-string err))))))))
 
-(add-hook 'before-save-hook #'init-org-validate-syntax)
+(defun init-org-find-file-hook ()
+  (when (file-equal-p (locate-user-emacs-file "init.org")
+		      buffer-file-name)
+    (add-hook 'after-save-hook #'init-org-after-save-hook nil 'local)))
+
+(add-hook 'find-file-hook #'init-org-find-file-hook)
 #+end_src
 
 *** Keybindings
@@ -165,11 +168,9 @@ Find an unused keybinding.
 (use-package free-keys :bind ("<f1>B" . free-keys))
 #+end_src
 
-
 * General
 
 ** Better defaults
-SCHEDULED: <2021-03-31 Wed>
 
 Adjust some minor annoyances in default emacs configuration.
 
@@ -206,67 +207,39 @@ Adjust some minor annoyances in default emacs configuration.
 
 ;; Increase history length
 (setq history-length 8000)
-#+END_SRC
 
-Backspace key is relatively difficult to access. For backward deletion I use <kbd>C-h</kbd> instead.
-
-#+BEGIN_SRC emacs-lisp
+;; Backspace key is relatively difficult to access. For backward deletion I use <kbd>C-h</kbd> instead.
 ;; In every situation where I want to use <backspace> I want to be able to use <C-h> instead.
 (global-set-key (kbd "C-h") 'backward-delete-char)
 
 ;; I haven't been able to figure out how to translate these combinations
 (global-set-key (kbd "M-h") 'backward-kill-word)
 (global-set-key (kbd "C-M-h") 'backward-kill-sexp)
-#+END_SRC
 
-Add ~initials~ to default completion styles.
-
-Enabling this will complete "tdoe" to "toggle-debug-on-error".
-
-#+BEGIN_SRC emacs-lisp
+;; Add ~initials~ to default completion styles.
+;; Enabling this will complete "tdoe" to "toggle-debug-on-error".
 (add-to-list 'completion-styles 'initials 'append)
-#+END_SRC
 
-Open debugger in the same frame.
-
-#+BEGIN_SRC emacs-lisp
+;; Open debugger in the same frame.
 (add-to-list 'display-buffer-alist
 	     '("`\\*Debugger\\*$" display-buffer-same-window))
-#+END_SRC
 
-Make buffer names more readable
-
-#+begin_src emacs-lisp
+;; Make buffer names more readable
 (setq uniquify-buffer-name-style 'forward)
-#+end_src
 
-Save buffer position between sessoins.
-
-#+begin_src emacs-lisp
+;; Save buffer position between sessoins.
 (save-place-mode 1)
-#+end_src
 
-Load from the source if its more fresh than the compiled code.
-
-#+begin_src emacs-lisp
+;; Load from the source if its more fresh than the compiled code.
 (setq load-prefer-newer t)
-#+end_src
 
-Highlight matching paren under cursor 
-
-#+begin_src emacs-lisp
+;; Highlight matching paren under cursor 
 (show-paren-mode 1)
-#+end_src
 
-Indent with spaces not tabs.
-
-#+begin_src emacs-lisp
+;; Indent with spaces not tabs.
 (setq indent-tabs-mode nil)
-#+end_src
 
-End the file with a blank line.
-
-#+begin_src emacs-lisp
+;;End the file with a blank line.
 (setq require-final-newline t)
 #+end_src
 
@@ -322,6 +295,15 @@ Emacs must infer $PATH from the shell configuration.
 
 (exec-path-from-shell-initialize)
 #+END_SRC
+
+** Buffers
+
+Use view mode for non-writeable files.
+
+#+begin_src emacs-lisp
+
+
+#+end_src
 
 ** Display
 
@@ -539,7 +521,9 @@ Configure company-mode
 Install ivy with some extensions.
 
 #+begin_src emacs-lisp
-(use-package ivy :bind ("C-c C-c" . ivy-restrict-to-matches))
+(use-package ivy
+  :config
+  (define-key ivy-mode-map (kbd "C-c C-c") 'ivy-restrict-to-matches))
 #+end_src
 
 Replace Isearch with Swiper, but not inside the minibuffer.
@@ -1466,4 +1450,6 @@ Enable autocompletion using LSP
    (make-lsp-client :new-connection (lsp-stdio-connection '("~/terraform-ls" "serve"))
 		    :major-modes '(terraform-mode)
 		    :server-id 'terraform-ls)))
+
+
 #+END_SRC

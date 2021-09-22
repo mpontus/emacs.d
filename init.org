@@ -1282,16 +1282,6 @@ Add userful clojure commands
   (setq cider-clojure-cli-global-options "-R:fig"))
 #+END_SRC
 
-* Lua
-
-#+begin_src emacs-lisp
-(use-package lua-mode
-  :ensure t
-  :mode ("\\.lua\\'" . lua-mode))
-#+end_src
-
-* AwesomeWM
-
 * OCaml
 
 Install tuareg-mode - a language support for ocaml.

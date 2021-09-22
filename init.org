@@ -559,12 +559,6 @@ Convenient macro for setting up new keybindings.
 (use-package general)
 #+end_src
 
-Repeatable key bindings using transient modes.
-
-#+begin_src emacs-lisp
-(use-package 'hydra)
-#+end_src
-
 Get an overview of current keybindings.
 
 #+begin_src emacs-lisp

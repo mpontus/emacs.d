@@ -570,12 +570,14 @@ Find which key the command is bound to.
 
 #+begin_src emacs-lisp
 (use-package which-key
-  :config
+  :init
   (which-key-mode t)
+  :config
   (which-key-setup-side-window-right-bottom)
   (setq which-key-idle-delay 0
 	which-key-idle-secondary-delay 0)
-  :bind (([f1 f1] . which-key-show-top-level)))
+  :bind
+  (([f1 f1] . which-key-show-top-level)))
 #+end_src
 
 Find an unused keybinding.
@@ -723,13 +725,13 @@ Install restclient executor to test HTTP queries in org-mode file
 ** ~org-roam~
 
 #+begin_src emacs-lisp
-;; (use-package org-roam
-;;   :init (setq org-roam-v2-ack t)
-;;   :custom (org-roam-directory "~/.org-roam")
-;;   :bind (("C-c n l" . org-roam-buffer-toggle)
-;; 	 ("C-c n f" . org-roam-node-find)
-;; 	 ("C-c n i" . org-roam-node-insert))
-;;   :config (org-roam-setup))
+(use-package org-roam
+  :init (setq org-roam-v2-ack t)
+  :custom (org-roam-directory "~/.org-roam")
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+	 ("C-c n f" . org-roam-node-find)
+	 ("C-c n i" . org-roam-node-insert))
+  :config (org-roam-setup))
 #+end_src
 
 
@@ -760,9 +762,9 @@ Configuration for Version Control tools.
 Magit is a Git interface for emacs. It helps tremendously with partial commits, rebase and history browsing.
 
 #+BEGIN_SRC emacs-lisp
-(package-install 'magit)
-
-(global-set-key (kbd "C-x g g") 'magit-status)
+(use-package magit
+  :bind
+  (("C-x g g" . magit-status)))
 #+END_SRC
 
 *** Make PR links clickable

@@ -779,9 +779,28 @@ Git timemachine allows you to quickly review the history of a signle file
 ** Git Gutter
 
 #+BEGIN_SRC emacs-lisp
-(package-install 'git-gutter)
+(use-package git-gutter
+  :config
+  (global-git-gutter-mode 1))
 
-(global-git-gutter-mode 1)
+(defhydra hydra-git-gutter (global-map "C-c g")
+  "C-c g"
+  ("d" hydra-git-gutter-diff/body)
+  ("e" git-gutter:end-of-hunk)
+  ("m" git-gutter:mark-hunk)
+  ("n" git-gutter:next-hunk)
+  ("g" git-gutter:popup-hunk)
+  ("p" git-gutter:previous-hunk)
+  ("v" git-gutter:revert-hunk)
+  ("s" git-gutter:stage-hunk)
+  ("$" git-gutter:statistic)
+  ("#" git-gutter:set-start-revision))
+
+(defhydra hydra-git-gutter-diff ()
+  "C-c g"
+  ("n" git-gutter:next-diff)
+  ("g" git-gutter:popup-diff)
+  ("p" git-gutter:previous-diff))
 #+END_SRC
 
 ** Ediff

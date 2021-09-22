@@ -1,17 +1,11 @@
-# -*- org-adapt-indentation: nil; org-edit-src-content-indentation: 0; org-src-preserve-indentation: t; -*-
+# -*- org-confirm-babel-evaluate: nil; org-adapt-indentation: nil; org-edit-src-content-indentation: 0; org-src-preserve-indentation: t; -*-
 #+TITLE: Emacs Init File
 #+STARTUP: showall
 #+PROPERTY: header-args :tangle no :noweb yes :noweb-ref runtime-configuration :results silent
 
 * Installation
 
-This config is bootstrapped by evaluating the source block below (<kbd>C-c C-c</kbd>).
-
-The file must be saved in `user-emacs-directory` (=~/.emacs.d= by default).
-
-** Bootstrap
-
-Make sure the properties at the top of the file are initialized before evaluating the block.
+Execute the code block below to bootstrap the ~init.el~ file.
 
 #+BEGIN_SRC emacs-lisp :tangle yes :noweb-ref none
 ;; This is the only source block in the file that gets tangled. All
@@ -32,7 +26,7 @@ Make sure the properties at the top of the file are initialized before evaluatin
       ;; Byte compile the file separately so that the macros will be
       ;; set up by the time byte-compilation happens
       (byte-compile-file (expand-file-name "init.el" user-emacs-directory)))
-  <<runtime-configuration>>);;qwe
+  <<runtime-configuration>>)
 #+END_SRC
 
 ** Package Manager
@@ -733,7 +727,6 @@ Install restclient executor to test HTTP queries in org-mode file
 	 ("C-c n i" . org-roam-node-insert))
   :config (org-roam-setup))
 #+end_src
-
 
 * Anki
 

@@ -1292,6 +1292,19 @@ Add userful clojure commands
 
 * AwesomeWM
 
+Repl
+
+#+begin_src emacs-lisp
+(use-package fennel-mode :ensure t)
+(use-package friar
+  :ensure t
+  :after fennel-mode
+  :quelpa (friar :fetcher "github" :repo "warreq/friar")
+  ;; :straight (:host github :repo "warreq/friar" :branch "master"
+  ;; 	     :files (:defaults "*.lua" "*.fnl"))
+  )
+#+end_src
+
 * OCaml
 
 Install tuareg-mode - a language support for ocaml.

@@ -885,12 +885,14 @@ Use paredit in eval-expression mode
 Custom keybindings.
 
 #+begin_src emacs-lisp
-(bind-keys :map paredit-mode-map
+(use-package paredit
+  :config
+  (bind-keys :map paredit-mode-map
 	   ("M-U" . paredit-convolute-sexp)
 	   ("M-H" . paredit-backward-slurp-sexp)
 	   ("M-J" . paredit-forward-slurp-sexp)
 	   ("M-K" . paredit-forward-barf-sexp)
-	   ("M-L" . paredit-backward-barf-sexp))
+	   ("M-L" . paredit-backward-barf-sexp)))
 #+end_src
 
 ** Flycheck

@@ -652,6 +652,7 @@ Now setup some keybindings
 #+end_src
 
 * Org Mode
+** General
 
 Install latest org mode from org repo.
 
@@ -694,7 +695,6 @@ Enable shell source blocks
    'org-babel-load-languages
    '((shell . t)))
 #+end_src
-
 
 ** REST client
 

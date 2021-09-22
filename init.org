@@ -720,6 +720,19 @@ Install restclient executor to test HTTP queries in org-mode file
    '((http . t))))
 #+END_SRC
 
+** ~org-roam~
+
+#+begin_src emacs-lisp
+;; (use-package org-roam
+;;   :init (setq org-roam-v2-ack t)
+;;   :custom (org-roam-directory "~/.org-roam")
+;;   :bind (("C-c n l" . org-roam-buffer-toggle)
+;; 	 ("C-c n f" . org-roam-node-find)
+;; 	 ("C-c n i" . org-roam-node-insert))
+;;   :config (org-roam-setup))
+#+end_src
+
+
 * Anki
 
 I save notes in org files and export them as Anki decks to be able to review them easily later on.

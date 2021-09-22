@@ -419,7 +419,6 @@ Entry point is <kbd>C-c m</kbd>
 (global-set-key (kbd "C->") 'mc/mark-more-like-this-extended)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-M->") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-c m") 'multiple-cursors-hydra/body)
 #+END_SRC
 
 ** Subword Mode

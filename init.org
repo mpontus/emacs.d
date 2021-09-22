@@ -515,6 +515,8 @@ Install ivy with some extensions.
 
 #+begin_src emacs-lisp
 (use-package ivy
+  :bind
+  ("C-c r" . ivy-resume)
   :config
   (define-key ivy-mode-map (kbd "C-c C-c") 'ivy-restrict-to-matches))
 #+end_src
@@ -531,9 +533,10 @@ Add various counsel commands:
 (use-package counsel 
   :bind
   ("C-c M-x" . counsel-M-x)
-  ("C-c c a" . counsel-apropos)
+  ("C-c c a" . counsel-ag)
   ("C-c c b" . counsel-bookmark)
   ("C-c c c" . counsel-imenu)
+  ("C-c c d a" . counsel-apropos)
   ("C-c c d b" . counsel-descbinds)
   ("C-c c d f" . counsel-describe-function)
   ("C-c c d o" . counsel-describe-face)

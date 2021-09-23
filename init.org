@@ -119,13 +119,14 @@ Check syntax before save. Helps avoid unbalanced parentheses!
 Convenient keybindings
 
 #+begin_src emacs-lisp
-(global-set-key
- (kbd "C-c i i")
- (defun find-init-org-file ()
-   "Open init.org from user directory"
-   
-   (interactive
-    (find-file (locate-user-emacs-file "init.org")))))
+(defun find-init-org-file ()
+  "Open init.org from user directory"
+  (interactive
+   (find-file (locate-user-emacs-file "init.org"))))
+
+(defhydra hydra-init-org (global-map "<f1>")
+  "init.org"
+  ("i" find-init-org-file :exit t))
 #+end_src
 
 Convenient macro for setting up new keybindings.

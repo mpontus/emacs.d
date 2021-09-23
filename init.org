@@ -898,7 +898,8 @@ Show file tree using dired sidebar:
 Paredit helps keeps parentheses ballanced and provides a few useful commands for working with lisp code.
 
 #+BEGIN_SRC emacs-lisp
-(use-package paredit :hook emacs-lisp)
+(use-package paredit
+  :config (add-hook 'emacs-lisp-mode-hook #'paredit-mode))
 #+END_SRC
 
 Use paredit in eval-expression mode
@@ -910,14 +911,28 @@ Use paredit in eval-expression mode
 Custom keybindings.
 
 #+begin_src emacs-lisp
-(use-package paredit
-  :config
-  (bind-keys :map paredit-mode-map
-	   ("M-U" . paredit-convolute-sexp)
-	   ("M-H" . paredit-backward-slurp-sexp)
-	   ("M-J" . paredit-forward-slurp-sexp)
-	   ("M-K" . paredit-forward-barf-sexp)
-	   ("M-L" . paredit-backward-barf-sexp)))
+(defhydra hydra-paredit (paredit-mode-map ""  :exit t)
+  "Paredit"
+  ("M-N" paredit-add-to-next-list)
+  ("M-P" paredit-add-to-previous-list)
+  ("M-SPC"
+   (skip-chars-backward "\r\n\s\t")
+   (when (prog1 (looking-at "[\r\n\s\t]")
+	   (just-one-space -1))
+     (just-one-space 0)))
+  ("C-k" paredit-kill)
+  ("C-M-k" kill-sexp)
+  ("M-U" paredit-convolute-sexp)
+  ("M-H" paredit-backward-slurp-sexp)
+  ("M-L" paredit-forward-slurp-sexp)
+  ("M-K" paredit-forward-barf-sexp)
+  ("C-M-n" paredit-forward-up)
+  ("M-r" paredit-raise-sexp)
+  ("M-s" paredit-splice-sexp-killing-backward)
+  ("M-s" paredit-splice-sexp-killing-backward)
+  ("C-M-y" paredit-yank-pop))
+
+(use-package paredit)
 #+end_src
 
 ** Flycheck

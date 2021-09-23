@@ -643,52 +643,6 @@ Now setup some keybindings
  ("C-c i p" . list-packages))
 #+end_src
 
-** Artist / Picture Mode
-
-#+begin_src emacs-lisp
-(defhydra hydra-picture-mode (global-map "C-c p")
-  "
-Picture:
-"
-;; picture-backward-clear-column
-;; picture-backward-column
-;; picture-beginning-of-line
-;; picture-clear-column
-;; picture-clear-line
-;; picture-clear-rectangle
-;; picture-clear-rectangle-to-register
-;; picture-delete-char
-;; picture-draw-rectangle
-;; picture-duplicate-line
-;; picture-end-of-line
-;; picture-forward-column
-;; picture-mode
-;; picture-mode-exit
-;; picture-motion
-;; picture-motion-reverse
-;; picture-mouse-set-point
-;; picture-move-down
-;; picture-move-up
-;; picture-movement-down
-;; picture-movement-left
-;; picture-movement-ne
-;; picture-movement-nw
-;; picture-movement-right
-;; picture-movement-se
-;; picture-movement-sw
-;; picture-movement-up
-;; picture-newline
-;; picture-open-line
-;; picture-self-insert
-;; picture-set-tab-stops
-;; picture-tab
-;; picture-tab-search
-;; picture-yank-at-click
-;; picture-yank-rectangle
-;; picture-yank-rectangle-from-register
-)
-#+end_src
-
 * Elisp
 
 ** Debugging

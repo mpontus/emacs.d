@@ -200,10 +200,6 @@ Adjust some minor annoyances in default emacs configuration.
 ;; Enabling this will complete "tdoe" to "toggle-debug-on-error".
 (add-to-list 'completion-styles 'initials 'append)
 
-;; Open debugger in the same frame.
-(add-to-list 'display-buffer-alist
-	     '("`\\*Debugger\\*$" display-buffer-same-window))
-
 ;; Make buffer names more readable
 (setq uniquify-buffer-name-style 'forward)
 
@@ -334,7 +330,7 @@ Show line numbers in programming modes:
 (add-hook 'prog-mode-hook 'setup-line-numbers)
 #+END_SRC
 
-** Window Management
+** Windows
 
 Switch between windows with M-<n>:
 
@@ -357,6 +353,20 @@ It's easier to use Super+ESC to switch between frames on HHKB:
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<s-escape>") 'other-frame)
 #+END_SRC
+
+*** Splitting and resizing
+
+This part of configuration is responsible for how new windows are placed inside of an existing frame.
+
+#+begin_src emacs-lisp
+;; Force side-by-side splits for windows larger than 104 chars in width.
+;; FIXME: this configuration may be suboptimal because the decision still only considers the original window size and not after rebalance
+(setq split-width-threshold 104)
+
+;; Forcing specific window arrangemnet could leave too much unused space or, conversly, split windows too fine to be usable. In order to make the best out of it we rebalance them after each window configuration change.
+;; FIXME: conflicts with Ediff and which-key-mode
+(add-hook 'window-configuration-change-hook #'balance-windows)
+#+end_src
 
 ** Shell
 
@@ -572,7 +582,9 @@ Tools for planning out key bindings
 (use-package free-keys :bind ("<f1>B" . free-keys))
 #+end_src
 
-*** Which-key
+*** COMMENT Which-key
+
+# Disabled because confict with window rebalancing from [[*Splitting and resizing][Splitting and resizing]]
 
 Find which key the command is bound to.
 
@@ -653,6 +665,13 @@ Now setup some keybindings
 (bind-key "C-c d v" #'debug-on-variable-change)
 (bind-key "C-c d e" #'toggle-debug-on-error)
 (bind-key "C-c d q" #'toggle-debug-on-quit)
+#+end_src
+
+Make sure debugger opens in the same frame
+
+#+begin_src emacs-lisp
+(add-to-list 'display-buffer-alist
+             '("`\\*Debugger\\*$" display-buffer-same-window))
 #+end_src
 
 * Org Mode

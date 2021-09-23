@@ -953,20 +953,6 @@ Enable flycheck in emacs lisp buffers for package authoring.
   :bind ("C-c e" . macrostep-expand))
 #+END_SRC
 
-** Testing
-
-Define a shortcut for running ert test at point
-
-#+begin_src emacs-lisp
-(defun ert-run-test-at-point (edebug-it)
-  (interactive "P")
-  (let ((s (eval-defun edebug-it)))
-    (ert-run-tests-interactively s)))
-
-(define-key emacs-lisp-mode-map (kbd "C-c C-e")
-  'ert-run-test-at-point)
-#+end_src
-
 * Javascript
 
 Set up tools for working with JavaScript code.

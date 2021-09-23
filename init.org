@@ -90,18 +90,21 @@ Install quelpa support for use-package:
 
 *** Validation
 
+Check syntax before save. Helps avoid unbalanced parentheses!
+
 #+begin_src emacs-lisp
 (defun init-org-after-save-hook ()
   (org-babel-map-src-blocks nil
     (save-restriction
       (narrow-to-region (goto-char beg-body) end-body)
       (with-syntax-table emacs-lisp-mode-syntax-table
-	(condition-case err
-	    (while (not (eobp))
-	      (and (zerop (skip-chars-forward "\s\t\r\n"))
-		   (null (forward-comment 1))
-		   (read (current-buffer))))
-	  (t (error "%s" (error-message-string err))))))))
+        (condition-case err
+            (while (not (eobp))
+              (and (zerop (skip-chars-forward "\s\t\r\n"))
+                   (null (forward-comment 1))
+                   (read (current-buffer))))
+          (t (error "%s" (error-message-string err)))))))
+  (message "😊 Syntax check complete!"))
 
 (defun init-org-find-file-hook ()
   (when (file-equal-p (locate-user-emacs-file "init.org")

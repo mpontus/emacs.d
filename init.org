@@ -564,6 +564,17 @@ Get an overview of current keybindings.
   :bind (("<f1>K" . buttons-display)))
 #+end_src
 
+
+#+begin_src emacs-lisp
+(defun insert-key-sequence (keys)
+  "Insert key sequence"
+  (interactive (list (read-key-sequence "Keys: ")))
+  (when (region-active-p)
+    (delete-region (region-beginning) (region-end)))
+  (insert (prin1-to-string (format-kbd-macro keys))))
+
+(global-set-key (kbd "C-c i k") #'insert-key-sequence)
+#+end_src
 Find which key the command is bound to.
 
 #+begin_src emacs-lisp

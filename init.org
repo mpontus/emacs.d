@@ -690,6 +690,13 @@ Indentation with tabs breaks tags alignment.
             (setq indent-tabs-mode nil)))
 #+END_SRC
 
+Configure editing source block files
+
+#+begin_src emacs-lisp
+;; Open indirect buffer in other window
+(setq org-src-window-setup 'other-window)
+#+end_src
+
 ** Shell
 
 Enable shell source blocks

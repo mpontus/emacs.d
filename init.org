@@ -345,6 +345,17 @@ Show line numbers in programming modes:
 #+END_SRC
 
 ** Windows
+** Editing
+
+*** Artist Mode
+
+Useful in editing hydras
+
+#+begin_src emacs-lisp
+;; Bind `artist-mode' close near rectangle commands
+(global-set-key (kbd "C-x r a") 'artist-mode)
+#+end_src
+
 *** Navigation
 
 Switch between windows with M-<n>:

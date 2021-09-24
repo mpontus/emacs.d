@@ -46,6 +46,20 @@ Setup builtin package manager.
   (package-refresh-contents 'async))
 #+END_SRC
 
+*** Paradox
+
+Replacement ~list-packages~ interface.
+
+#+begin_src emacs-lisp
+(use-package paradox
+  :init (paradox-disable))
+#+end_src
+
+Keybindings:
+
+- v: visit home
+- l: recent comits
+- f: filter
 
 *** Use Package
 

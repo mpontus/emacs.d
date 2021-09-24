@@ -706,6 +706,17 @@ Make sure debugger opens in the same frame
              '("`\\*Debugger\\*$" display-buffer-same-window))
 #+end_src
 
+Re-evaluate last expression
+
+#+begin_src emacs-lisp
+(defun eval-last-expression ()
+  (interactive)
+  (eval-expression
+   (read (car read-expression-history))))
+
+(global-set-key (kbd "<f12>") #'eval-last-expression)
+#+end_src
+
 * Org Mode
 ** General
 

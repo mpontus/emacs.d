@@ -345,6 +345,7 @@ Show line numbers in programming modes:
 #+END_SRC
 
 ** Windows
+*** Navigation
 
 Switch between windows with M-<n>:
 
@@ -368,18 +369,13 @@ It's easier to use Super+ESC to switch between frames on HHKB:
 (global-set-key (kbd "<s-escape>") 'other-frame)
 #+END_SRC
 
-*** Splitting and resizing
+*** Layout
 
-This part of configuration is responsible for how new windows are placed inside of an existing frame.
+How windows are arranged within a frame.
 
 #+begin_src emacs-lisp
-;; Force side-by-side splits for windows larger than 104 chars in width.
-;; FIXME: this configuration may be suboptimal because the decision still only considers the original window size and not after rebalance
-(setq split-width-threshold 104)
-
-;; Forcing specific window arrangemnet could leave too much unused space or, conversly, split windows too fine to be usable. In order to make the best out of it we rebalance them after each window configuration change.
-;; FIXME: conflicts with Ediff and which-key-mode
-(add-hook 'window-configuration-change-hook #'balance-windows)
+;; I don't think I ever want more than 1 split.
+(setq split-width-threshold 78)
 #+end_src
 
 ** Shell

@@ -568,6 +568,10 @@ Add various counsel commands:
   ("C-c c y" . counsel-yank-pop))
 #+end_src
 
+Swiper Keybindings:
+
+- S-SPC: restrict candidates
+
 ** Help
 
 This section provides help with emacs.

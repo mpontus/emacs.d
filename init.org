@@ -11,7 +11,7 @@ Execute the code block below to bootstrap the ~init.el~ file.
 ;; This is the only source block in the file that gets tangled. All
 ;; other source blocks will be embedded in the codition below using
 ;; noweb references.
-;; 
+;;
 ;; Special properties at the top of this file assigns default
 ;; reference name to every block and excludes them from tangling. This
 ;; block overrides this configuraiton using header props.
@@ -41,7 +41,7 @@ Setup builtin package manager.
 	("melpa" . "https://melpa.org/packages/")
 	("gnu" . "http://elpa.gnu.org/packages/")))
 ;; hello
-(ignore-errors 
+(ignore-errors
   (package-initialize 'no-activate)
   (package-refresh-contents 'async))
 #+END_SRC
@@ -223,7 +223,7 @@ Adjust some minor annoyances in default emacs configuration.
 ;; Load from the source if its more fresh than the compiled code.
 (setq load-prefer-newer t)
 
-;; Highlight matching paren under cursor 
+;; Highlight matching paren under cursor
 (show-paren-mode 1)
 
 ;; Indent with spaces not tabs.
@@ -386,7 +386,7 @@ How windows are arranged within a frame.
 
 #+begin_src emacs-lisp
 ;; I don't think I ever want more than 1 split.
-(setq split-width-threshold 78)
+(setq split-width-threshold 104)
 #+end_src
 
 ** Shell
@@ -547,7 +547,7 @@ Replace Isearch with Swiper, but not inside the minibuffer.
 Add various counsel commands:
 
 #+begin_src emacs-lisp
-(use-package counsel 
+(use-package counsel
   :bind
   ("C-c M-x" . counsel-M-x)
   ("C-c c a" . counsel-ag)
@@ -834,9 +834,14 @@ Trying out jounraling.
 (add-hook 'diary-mode-hook 'visual-fill-column-mode)
 #+END_SRC
 
-* Version Control
+* Git
 
-Configuration for Version Control tools.
+Configuration for Version Control tools
+
+#+begin_src emacs-lisp
+(defhydra hydra-git (global-map "C-c g") "git")
+(global-set-key (kbd "C-c g") #'hydra-git/body)
+#+end_src
 
 ** Magit
 
@@ -846,6 +851,11 @@ Magit is a Git interface for emacs. It helps tremendously with partial commits, 
 (use-package magit
   :bind
   (("C-x g g" . magit-status)))
+
+(defhydra+ hydra-git ()
+  "magit"
+  ("g" #'magit-status)
+  ("c" #'magit-commit))
 #+END_SRC
 
 *** Make PR links clickable
@@ -861,7 +871,11 @@ Git timemachine allows you to quickly review the history of a signle file
 #+BEGIN_SRC emacs-lisp
 (package-install 'git-timemachine)
 
-(global-set-key (kbd "C-x g t") 'git-timemachine)
+(defhydra+ hydra-git ()
+  "git-timemachine"
+  ("t" git-timemachine))
+#+END_SRC
+
 #+END_SRC
 
 ** Git Gutter
@@ -869,10 +883,12 @@ Git timemachine allows you to quickly review the history of a signle file
 #+BEGIN_SRC emacs-lisp
 (use-package git-gutter
   :config
+  (setq git-gutter:ask-p nil)
   (global-git-gutter-mode 1))
 
-(defhydra hydra-git-gutter (global-map "C-c g")
-  "git gutter"
+
+(defhydra+ hydra-git ()
+  "git-gutter"
   ("e" git-gutter:end-of-hunk)
   ("m" git-gutter:mark-hunk)
   ("n" git-gutter:next-hunk)
@@ -1123,7 +1139,7 @@ Enable completion support for Flow files:
 (add-hook 'js-mode-hook 'flow-completion-at-point-mode)
 #+END_SRC
 
-* Typescript 
+* Typescript
 
 Typescript is a language that compiles to javascript.
 
@@ -1571,4 +1587,3 @@ Enable autocompletion using LSP
 
 
 #+END_SRC
-

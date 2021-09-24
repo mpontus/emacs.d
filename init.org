@@ -46,13 +46,13 @@ Setup builtin package manager.
   (package-refresh-contents 'async))
 #+END_SRC
 
-*** Paradox
+*** Package listing
 
-Replacement ~list-packages~ interface.
+Provides star count and homepage link
 
 #+begin_src emacs-lisp
 (use-package paradox
-  :init (paradox-disable))
+  :init (paradox-enable))
 #+end_src
 
 Keybindings:
@@ -561,7 +561,27 @@ Add various counsel commands:
   ("C-c c y" . counsel-yank-pop))
 #+end_src
 
-** Keybindings
+** Help
+
+This section provides help with emacs.
+
+- accessing documentation
+- changing configuration
+- debugging
+
+#+begin_src emacs-lisp
+(defun apropos-function ()
+  (interactive)
+  (let ((current-prefix-arg 4))
+    (call-interactively 'apropos-command)))
+
+;; Use hydra to setup key bindings for help commands
+(defhydra hydra-help (global-map "<f1>" :exit t) "help"
+  ("a" #'apropos-function)
+  ("c" #'apropos-command))
+#+end_src
+
+*** Keybindings
 
 Convenient macro for setting up new keybindings.
 
@@ -588,7 +608,7 @@ Get an overview of current keybindings.
 (global-set-key (kbd "C-c i k") #'insert-key-sequence)
 #+end_src
 
-*** Finding free keys
+**** Finding free keys
 
 Tools for planning out key bindings
 
@@ -596,25 +616,23 @@ Tools for planning out key bindings
 (use-package free-keys :bind ("<f1>B" . free-keys))
 #+end_src
 
-*** COMMENT Which-key
+**** Which-key
 
-# Disabled because confict with window rebalancing from [[*Splitting and resizing][Splitting and resizing]]
-
-Find which key the command is bound to.
+Provides summary information for bound keys.
 
 #+begin_src emacs-lisp
 (use-package which-key
-  :init (which-key-mode t)
-  :config
-  (which-key-setup-side-window-right-bottom)
-  (setq which-key-idle-delay 0
-	which-key-idle-secondary-delay 0)
-  :bind
-  (([f1 f1] . which-key-show-top-level)))
+  ;; FIXME: conflicts with automatic window rebalancing
+  ;; :init (which-key-mode t)
+  ;; :config
+  ;; (which-key-setup-side-window-right-bottom)
+  ;; (setq which-key-idle-delay 0
+  ;; 	which-key-idle-secondary-delay 0)
+  )
 #+end_src
 
 
-** Custom Keybindings
+*** Custom Keybindings
 
 Define some helper function for persisting keybindings.
 
@@ -1531,3 +1549,4 @@ Enable autocompletion using LSP
 
 
 #+END_SRC
+

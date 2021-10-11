@@ -1024,17 +1024,6 @@ Custom keybindings.
 (use-package paredit)
 #+end_src
 
-** Flycheck
-
-Enable flycheck in emacs lisp buffers for package authoring.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'emacs-lisp-mode-hook 'flycheck-mode)
-
-(define-key emacs-lisp-mode-map (kbd "M-n") 'next-error)
-(define-key emacs-lisp-mode-map (kbd "M-p") 'previous-error)
-#+END_SRC
-
 ** Macro expansion
 
 #+BEGIN_SRC emacs-lisp

@@ -19,13 +19,13 @@ Execute the code block below to bootstrap the ~init.el~ file.
 ;; The condition below evaluates the content of all other blocks when
 ;; init.el is newer than init.el, otherwise it reinitializes init.el
 ;; from init.org and evaulates it after init.el gets updated.
-(if (file-newer-than-file-p (expand-file-name "init.org" user-emacs-directory)
-			    (expand-file-name "init.el" user-emacs-directory))
+(if (file-newer-than-file-p (locate-user-emacs-file "init.org")
+			    (locate-user-emacs-file "init.el"))
     (let ((debug-on-quit t) (debug-on-error t))
-      (org-babel-load-file (expand-file-name "init.org" user-emacs-directory))
+      (org-babel-load-file (locate-user-emacs-file "init.org"))
       ;; Byte compile the file separately so that the macros will be
       ;; set up by the time byte-compilation happens
-      (byte-compile-file (expand-file-name "init.el" user-emacs-directory)))
+      (byte-compile-file (locate-user-emacs-file "init.el")))
   <<runtime-configuration>>)
 #+END_SRC
 
@@ -37,13 +37,13 @@ Setup builtin package manager.
 (require 'package)
 
 (setq package-archives
-      '(("org" . "https://orgmode.org/elpa/")
-	("melpa" . "https://melpa.org/packages/")
-	("gnu" . "http://elpa.gnu.org/packages/")))
-;; hello
+    '(("org" . "https://orgmode.org/elpa/")
+    ("melpa" . "https://melpa.org/packages/")
+    ("gnu" . "http://elpa.gnu.org/packages/")))
+
 (ignore-errors
-  (package-initialize 'no-activate)
-  (package-refresh-contents 'async))
+    (package-initialize 'no-activate)
+    (package-refresh-contents 'async))
 #+END_SRC
 
 *** Package listing
@@ -52,14 +52,16 @@ Provides star count and homepage link
 
 #+begin_src emacs-lisp
 (use-package paradox
-  :init (paradox-enable))
+    :init (paradox-enable))
 #+end_src
 
-Keybindings:
-
-- v: visit home
-- l: recent comits
-- f: filter
+|--------------+-------------------------------|
+| key sequence | command                       |
+|--------------+-------------------------------|
+| v            | paradox-menu-visit-homepage   |
+| l            | paradox-menu-view-commit-list |
+| f            | package-menu-filter           |
+|--------------+-------------------------------|
 
 *** Use Package
 
@@ -96,7 +98,7 @@ Install quelpa support for use-package:
 
 #+BEGIN_SRC emacs-lisp
 (eval-and-compile
-  (use-package quelpa-use-package
+    (use-package quelpa-use-package
     :config (quelpa-use-package-activate-advice)))
 #+END_SRC
 
@@ -108,21 +110,21 @@ Check syntax before save. Helps avoid unbalanced parentheses!
 
 #+begin_src emacs-lisp
 (defun init-org-after-save-hook ()
-  (org-babel-map-src-blocks nil
+    (org-babel-map-src-blocks nil
     (save-restriction
-      (narrow-to-region (goto-char beg-body) end-body)
-      (with-syntax-table emacs-lisp-mode-syntax-table
-        (condition-case err
-            (while (not (eobp))
-              (and (zerop (skip-chars-forward "\s\t\r\n"))
-                   (null (forward-comment 1))
-                   (read (current-buffer))))
-          (t (error "%s" (error-message-string err)))))))
-  (message "😊 Syntax check complete!"))
+    (narrow-to-region (goto-char beg-body) end-body)
+    (with-syntax-table emacs-lisp-mode-syntax-table
+    (condition-case err
+    (while (not (eobp))
+    (and (zerop (skip-chars-forward "\s\t\r\n"))
+    (null (forward-comment 1))
+    (read (current-buffer))))
+    (t (error "%s" (error-message-string err)))))))
+    (message "😊 Syntax check complete!"))
 
 (defun init-org-find-file-hook ()
-  (when (file-equal-p (locate-user-emacs-file "init.org")
-		      buffer-file-name)
+    (when (file-equal-p (locate-user-emacs-file "init.org")
+    buffer-file-name)
     (add-hook 'after-save-hook #'init-org-after-save-hook nil 'local)))
 
 (add-hook 'find-file-hook #'init-org-find-file-hook)
@@ -134,13 +136,13 @@ Convenient keybindings
 
 #+begin_src emacs-lisp
 (defun find-init-org-file ()
-  "Open init.org from user directory"
-  (interactive
-   (find-file (locate-user-emacs-file "init.org"))))
+    "Open init.org from user directory"
+    (interactive
+    (find-file (locate-user-emacs-file "init.org"))))
 
 (defhydra hydra-init-org (global-map "<f1>")
-  "init.org"
-  ("i" find-init-org-file :exit t))
+    "init.org"
+    ("i" find-init-org-file :exit t))
 #+end_src
 
 Convenient macro for setting up new keybindings.
@@ -153,7 +155,7 @@ Get an overview of current keybindings.
 
 #+begin_src emacs-lisp
 (use-package buttons
-  :bind (("<f1>K" . buttons-display)))
+    :bind (("<f1>K" . buttons-display)))
 #+end_src
 
 Find an unused keybinding.
@@ -163,7 +165,43 @@ Find an unused keybinding.
 #+end_src
 
 * General
+** Emacs
+*** Y-or-n prompts
 
+** Appearance
+#+begin_src emacs-lisp
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+;; Hide menu-bar unless on Mac OS X where it doesn't take away any real estate
+(unless (eq window-system 'mac)
+    (menu-bar-mode -1))
+#+end_src
+
+** Window layout
+
+#+begin_src emacs-lisp
+(defhydra hydra-windows (global-map "C-c w")
+    "windows")
+
+(global-set-key (kbd "C-c w") #'hydra-windows/body)
+(global-set-key (kbd "C-c q") #'quit-window)
+#+end_src
+
+*** Dedicated windows
+
+#+begin_src emacs-lisp
+(defun toggle-window-dedicated-p (&optional window)
+    (interactive (list (selected-window)))
+    (set-window-dedicated-p window (not (window-dedicated-p window)))
+    (message "Window %s dedicated"
+    (if (window-dedicated-p window) "is" "is not")))
+
+(defhydra+ hydra-windows (global-map "C-c w")
+    ("d" #'toggle-window-dedicated-p))
+#+end_src
+
+** Buffer management
+** Text manipulation
 ** Better defaults
 
 Adjust some minor annoyances in default emacs configuration.
@@ -183,9 +221,9 @@ Adjust some minor annoyances in default emacs configuration.
 
 ;; Move backups and auto-save files to home directory to avoid cluttering work dir
 (setq backup-directory-alist
-      `((".*" . ,(expand-file-name "backups" user-emacs-directory))))
+    `((".*" . ,(expand-file-name "backups" user-emacs-directory))))
 (setq auto-save-file-name-transforms
-      `((".*" ,(expand-file-name "backups" user-emacs-directory) t)))
+    `((".*" ,(expand-file-name "backups" user-emacs-directory) t)))
 
 ;; Replace selection when region is active during `yank'
 (delete-selection-mode +1)
@@ -238,8 +276,11 @@ Adjust some minor annoyances in default emacs configuration.
 Make it possible to connect to the running emacs instance using ~emacsclient~.
 
 #+begin_src emacs-lisp
-(with-demoted-errors "Error: %S"
-  (server-start))
+(with-eval-after-load 'server
+    (when (or (not (server-running-p))
+    (and (y-or-n-p "Emacs server already running. Reconnect?")
+    (server-force-delete)))
+    (server-start t)))
 #+end_src
 
 When a client connects, bring it up above other programs.
@@ -258,8 +299,8 @@ Following package adds every opened file, whichever method was used to open it, 
 
 #+BEGIN_SRC emacs-lisp
 (quelpa '(find-file-global-history
-	  :repo "mpontus/find-file-global-history.el"
-	  :fetcher github))
+    :repo "mpontus/find-file-global-history.el"
+    :fetcher github))
 
 (find-file-global-history-mode 1)
 #+END_SRC
@@ -271,41 +312,16 @@ I often need to copy contents of the entire buffer somewhere else. This shortcut
 #+BEGIN_SRC emacs-lisp
 (defun yank-entire-buffer ()
     (interactive)
-  (kill-ring-save (point-min) (point-max)))
+    (kill-ring-save (point-min) (point-max)))
 
 (global-set-key (kbd "C-c M-w") 'yank-entire-buffer)
 #+END_SRC
-
-** Exec Path From Shell
-
-Emacs must infer $PATH from the shell configuration.
-
-#+BEGIN_SRC emacs-lisp
-(package-install 'exec-path-from-shell)
-
-(exec-path-from-shell-initialize)
-#+END_SRC
-
-** Buffers
-
-Use view mode for non-writeable files.
-
-#+begin_src emacs-lisp
-
-
-#+end_src
 
 ** Display
 
 Change default emacs appearance
 
 #+BEGIN_SRC emacs-lisp
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-
-;; Hide menu-bar unless on Mac OS X where it doesn't take away any real estate
-(unless (eq window-system 'mac)
-  (menu-bar-mode -1))
 
 (set-frame-font "Hack-12" 'keep-size t)
 
@@ -320,7 +336,7 @@ Make it easy to adjust text scale in all windows
 
 #+begin_src emacs-lisp
 (use-package default-text-scale
-  :config (default-text-scale-mode t))
+    :config (default-text-scale-mode t))
 #+end_src
 
 Highlight current line:
@@ -336,10 +352,10 @@ Show line numbers in programming modes:
 
 #+BEGIN_SRC emacs-lisp
 (defun setup-line-numbers ()
-  ;; Use native line-numbers available in Emacs 26+
-  (setq-local display-line-numbers t)
-  ;; Disable line wrap when line numbers are shown
-  (setq-local truncate-lines t))
+    ;; Use native line-numbers available in Emacs 26+
+    (setq-local display-line-numbers t)
+    ;; Disable line wrap when line numbers are shown
+    (setq-local truncate-lines t))
 
 (add-hook 'prog-mode-hook 'setup-line-numbers)
 #+END_SRC
@@ -362,8 +378,8 @@ Switch between windows with M-<n>:
 
 #+BEGIN_SRC emacs-lisp
 (use-package window-number
-  :quelpa (window-number :fetcher github :repo "mpontus/window-number.el")
-  :config (window-number-mode))
+    :quelpa (window-number :fetcher github :repo "mpontus/window-number.el")
+    :config (window-number-mode))
 #+END_SRC
 
 Winner mode provides undo history for window configuration.
@@ -418,7 +434,7 @@ Undo tree's approach keeps the basic workflow simple, while saving all of the un
 ;; Save undo history between sessions
 (setq-default undo-tree-auto-save-history t)
 (setq-default undo-tree-history-directory-alist
-              '(("." . "~/.emacs.d/undo-tree/")))
+    '(("." . "~/.emacs.d/undo-tree/")))
 
 ;; I had this set at some point. I don't remember why.
 ;; (setcdr undo-tree-map nil)
@@ -462,11 +478,11 @@ Sort by directories first in Dired listing:
 
 #+BEGIN_SRC emacs-lisp
 (use-package ls-lisp
-  :ensure nil
-  :config
-  (setq ls-lisp-dirs-first t)
-  ;; Force dired to use emacs-lisp ls implementation
-  (setq ls-lisp-use-insert-directory-program nil))
+    :ensure nil
+    :config
+    (setq ls-lisp-dirs-first t)
+    ;; Force dired to use emacs-lisp ls implementation
+    (setq ls-lisp-use-insert-directory-program nil))
 #+END_SRC
 
 Dired+ enhances dired functionality with some useful commands.
@@ -497,16 +513,16 @@ Additional configuraiton not inluded in this file is stored in [[./custom.el]]
 
 #+BEGIN_SRC emacs-lisp
 (let ((custom-file (expand-file-name "custom.el" user-emacs-directory)))
-  (unless (file-exists-p custom-file)
+    (unless (file-exists-p custom-file)
     (write-region "" nil custom-file)
-  (load-file custom-file)))
+    (load-file custom-file)))
 #+END_SRC
 
 Passwords and authentication credentials are stored in [[./secrets.el.gpg]]
 
 #+BEGIN_SRC emacs-lisp
 (let ((secrets-file (expand-file-name "secrets.el.gpg" user-emacs-directory)))
-  (when (file-exists-p secrets-file)
+    (when (file-exists-p secrets-file)
     (load-file secrets-file)))
 #+END_SRC
 
@@ -516,8 +532,8 @@ Configure company-mode
 
 #+BEGIN_SRC emacs-lisp
 (use-package company
-  :config
-  (define-key company-mode-map (kbd "TAB") #'company-indent-or-complete-common))
+    :config
+    (define-key company-mode-map (kbd "TAB") #'company-indent-or-complete-common))
 #+END_SRC
 
 ** Language Server Protocol
@@ -532,10 +548,10 @@ Install ivy with some extensions.
 
 #+begin_src emacs-lisp
 (use-package ivy
-  :bind
-  ("C-c r" . ivy-resume)
-  :config
-  (define-key ivy-mode-map (kbd "C-c C-c") 'ivy-restrict-to-matches))
+    :bind
+    ("C-c r" . ivy-resume)
+    :config
+    (define-key ivy-mode-map (kbd "C-c C-c") 'ivy-restrict-to-matches))
 #+end_src
 
 Replace Isearch with Swiper, but not inside the minibuffer.
@@ -548,24 +564,24 @@ Add various counsel commands:
 
 #+begin_src emacs-lisp
 (use-package counsel
-  :bind
-  ("C-c M-x" . counsel-M-x)
-  ("C-c c a" . counsel-ag)
-  ("C-c c b" . counsel-bookmark)
-  ("C-c c c" . counsel-imenu)
-  ("C-c c d a" . counsel-apropos)
-  ("C-c c d b" . counsel-descbinds)
-  ("C-c c d f" . counsel-describe-function)
-  ("C-c c d o" . counsel-describe-face)
-  ("C-c c d v" . counsel-describe-variable)
-  ("C-c c f f" . counsel-find-file)
-  ("C-c c f i" . counsel-info-lookup-symbol)
-  ("C-c c f l" . counsel-find-library)
-  ("C-c c l l" . counsel-load-library)
-  ("C-c c l t" . counsel-load-theme)
-  ("C-c c m" . counsel-mark-ring)
-  ("C-c c o" . counsel-faces)
-  ("C-c c y" . counsel-yank-pop))
+    :bind
+    ("C-c M-x" . counsel-M-x)
+    ("C-c c a" . counsel-ag)
+    ("C-c c b" . counsel-bookmark)
+    ("C-c c c" . counsel-imenu)
+    ("C-c c d a" . counsel-apropos)
+    ("C-c c d b" . counsel-descbinds)
+    ("C-c c d f" . counsel-describe-function)
+    ("C-c c d o" . counsel-describe-face)
+    ("C-c c d v" . counsel-describe-variable)
+    ("C-c c f f" . counsel-find-file)
+    ("C-c c f i" . counsel-info-lookup-symbol)
+    ("C-c c f l" . counsel-find-library)
+    ("C-c c l l" . counsel-load-library)
+    ("C-c c l t" . counsel-load-theme)
+    ("C-c c m" . counsel-mark-ring)
+    ("C-c c o" . counsel-faces)
+    ("C-c c y" . counsel-yank-pop))
 #+end_src
 
 Swiper Keybindings:
@@ -582,14 +598,26 @@ This section provides help with emacs.
 
 #+begin_src emacs-lisp
 (defun apropos-function ()
-  (interactive)
-  (let ((current-prefix-arg 4))
+    (interactive)
+    (let ((current-prefix-arg 4))
     (call-interactively 'apropos-command)))
 
+(define-key global-map (kbd "<f1> a") nil)
+(define-key global-map (kbd "<f1> d") nil)
+(define-key global-map (kbd "<f1> p") nil)
+(define-key global-map (kbd "<f1> f") nil)
+
 ;; Use hydra to setup key bindings for help commands
-(defhydra hydra-help (global-map "<f1>" :exit t) "help"
-  ("a" #'apropos-function)
-  ("c" #'apropos-command))
+(defhydra hydra-help (global-map "<f1>" :exit t)
+    "help"
+    ("af" #'apropos-function)
+    ("ac" #'apropos-command)
+    ("ad" #'apropos-documentation)
+    ("df" #'describe-function)
+    ("ff" #'find-function)
+    ("dm" #'describe-mode)
+    ("pi" #'package-install)
+    ("pl" #'list-packages))
 #+end_src
 
 *** Keybindings
@@ -604,17 +632,16 @@ Get an overview of current keybindings.
 
 #+begin_src emacs-lisp
 (use-package buttons
-  :bind (("<f1>K" . buttons-display)))
+    :bind (("<f1>K" . buttons-display)))
 #+end_src
-
 
 #+begin_src emacs-lisp
 (defun insert-key-sequence (keys)
-  "Insert key sequence"
-  (interactive (list (read-key-sequence "Keys: ")))
-  (when (region-active-p)
+    "Insert key sequence"
+    (interactive (list (read-key-sequence "Keys: ")))
+    (when (region-active-p)
     (delete-region (region-beginning) (region-end)))
-  (insert (prin1-to-string (format-kbd-macro keys))))
+    (insert (prin1-to-string (format-kbd-macro keys))))
 
 (global-set-key (kbd "C-c i k") #'insert-key-sequence)
 #+end_src
@@ -633,15 +660,18 @@ Provides summary information for bound keys.
 
 #+begin_src emacs-lisp
 (use-package which-key
-  ;; FIXME: conflicts with automatic window rebalancing
-  ;; :init (which-key-mode t)
-  ;; :config
-  ;; (which-key-setup-side-window-right-bottom)
-  ;; (setq which-key-idle-delay 0
-  ;; 	which-key-idle-secondary-delay 0)
-  )
+    ;; FIXME: conflicts with automatic window rebalancing
+    ;; :init (which-key-mode t)
+    ;; :config
+    ;; (which-key-setup-side-window-right-bottom)
+    ;; (setq which-key-idle-delay 0
+    ;;    which-key-idle-secondary-delay 0)
+    )
+    
+(defhydra+ hydra-help ()
+    ("m" #'which-key-show-major-mode)
+    ("M" #'which-key-show-full-major-mode))
 #+end_src
-
 
 *** Custom Keybindings
 
@@ -649,41 +679,41 @@ Define some helper function for persisting keybindings.
 
 #+begin_src emacs-lisp
 (defun locate-misc-keybindings ()
-  "Find `setup-misc-keybindings' macro in init.org"
-  (interactive)
-  (let ((original-buffer (current-buffer)))
+    "Find `setup-misc-keybindings' macro in init.org"
+    (interactive)
+    (let ((original-buffer (current-buffer)))
     ;; (pop-to-buffer-same-window
     ;;  (find-file-noselect (locate-user-emacs-file "init.org")))
     (find-file-other-window (locate-user-emacs-file "init.org"))
     (save-restriction
-      (widen)
-      (goto-char (point-min))
-      (search-forward (format "(%s" 'setup-misc-keybindings))
-      (backward-up-list)
-      (forward-sexp)
-      (backward-char)
-      (delete-char (abs (skip-chars-backward "\s\t\n\r")))
-      (skip-syntax-backward "s")
-      (newline)
-      (save-mark-and-excursion
-	(org-babel-mark-block)
-	(narrow-to-region (region-beginning) (region-end))
-	(lisp-indent-region (point-min) (point-max))))
+    (widen)
+    (goto-char (point-min))
+    (search-forward (format "(%s" 'setup-misc-keybindings))
+    (backward-up-list)
+    (forward-sexp)
+    (backward-char)
+    (delete-char (abs (skip-chars-backward "\s\t\n\r")))
+    (skip-syntax-backward "s")
+    (newline)
+    (save-mark-and-excursion
+    (org-babel-mark-block)
+    (narrow-to-region (region-beginning) (region-end))
+    (lisp-indent-region (point-min) (point-max))))
     (back-to-indentation)
     (save-excursion (insert (format "%S" '("" . t))))
     (save-mark-and-excursion
-      (down-list)
-      (deactivate-mark)
-      (mark-sexp)
-      (let* ((key (read-key-sequence "Bind the following key: "))
-	     (keystr (format-kbd-macro key)))
-	(delete-region (region-beginning) (region-end))
-	(insert (format "%S" keystr))
-	(progn (up-list) (down-list -1) (mark-sexp -1))
-	(let* ((binding (with-current-buffer original-buffer (key-binding key)))
-	       (prompt (format "Bind %S to the following command (default %S): " keystr binding)))
-	  (insert (prog1 (symbol-name (read-command prompt binding))
-		    (delete-region (region-beginning) (region-end)))))))
+    (down-list)
+    (deactivate-mark)
+    (mark-sexp)
+    (let* ((key (read-key-sequence "Bind the following key: "))
+    (keystr (format-kbd-macro key)))
+    (delete-region (region-beginning) (region-end))
+    (insert (format "%S" keystr))
+    (progn (up-list) (down-list -1) (mark-sexp -1))
+    (let* ((binding (with-current-buffer original-buffer (key-binding key)))
+    (prompt (format "Bind %S to the following command (default %S): " keystr binding)))
+    (insert (prog1 (symbol-name (read-command prompt binding))
+    (delete-region (region-beginning) (region-end)))))))
     (pp-eval-expression (read (buffer-substring (scan-lists (point) -1 1) (scan-lists (point) 1 1))))
     (switch-to-buffer original-buffer)))
 
@@ -694,8 +724,8 @@ Now setup some keybindings
 
 #+begin_src emacs-lisp
 (setup-misc-keybindings
- ("C-c i k" . locate-misc-keybindings)
- ("C-c i p" . list-packages))
+    ("C-c i k" . locate-misc-keybindings)
+    ("C-c i p" . list-packages))
 #+end_src
 
 * Elisp
@@ -714,19 +744,29 @@ Make sure debugger opens in the same frame
 
 #+begin_src emacs-lisp
 (add-to-list 'display-buffer-alist
-             '("`\\*Debugger\\*$" display-buffer-same-window))
+    '("`\\*Debugger\\*$" display-buffer-same-window))
 #+end_src
 
 Re-evaluate last expression
 
 #+begin_src emacs-lisp
 (defun eval-last-expression ()
-  (interactive)
-  (eval-expression
-   (read (car read-expression-history))))
+    (interactive)
+    (eval-expression
+    (read (car read-expression-history))))
 
 (global-set-key (kbd "<f12>") #'eval-last-expression)
 #+end_src
+
+*** Exec Path From Shell
+
+    Emacs must infer $PATH from the shell configuration.
+
+    #+BEGIN_SRC emacs-lisp
+    (package-install 'exec-path-from-shell)
+
+    (exec-path-from-shell-initialize)
+    #+END_SRC
 
 * Org Mode
 ** General
@@ -741,26 +781,26 @@ Enable wrapping of lines.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'org
-  (add-hook 'org-mode-hook 'visual-line-mode))
+    (add-hook 'org-mode-hook 'visual-line-mode))
 #+END_SRC
 
 Custom keybindings.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'org
-  ;; Add aligned tag with C-c C-g
-  (define-key org-mode-map (kbd "C-c C-g") 'org-set-tags)
-  ;; Move subheadings/list-items up and down with M-p/M-n
-  (define-key org-mode-map (kbd "M-p") 'org-metaup)
-  (define-key org-mode-map (kbd "M-n") 'org-metadown))
+    ;; Add aligned tag with C-c C-g
+    (define-key org-mode-map (kbd "C-c C-g") 'org-set-tags)
+    ;; Move subheadings/list-items up and down with M-p/M-n
+    (define-key org-mode-map (kbd "M-p") 'org-metaup)
+    (define-key org-mode-map (kbd "M-n") 'org-metadown))
 #+END_SRC
 
 Indentation with tabs breaks tags alignment.
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'org-mode-hook
-          (defun setup-org-mode-indentation ()
-            (setq indent-tabs-mode nil)))
+    (defun setup-org-mode-indentation ()
+    (setq indent-tabs-mode nil)))
 #+END_SRC
 
 Configure editing source block files
@@ -776,8 +816,8 @@ Enable shell source blocks
 
 #+begin_src emacs-lisp
 (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((shell . t)))
+    'org-babel-load-languages
+    '((shell . t)))
 #+end_src
 
 ** REST client
@@ -786,10 +826,10 @@ Install restclient executor to test HTTP queries in org-mode file
 
 #+BEGIN_SRC emacs-lisp
 (use-package ob-restclient
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((restclient . t))))
+    :config
+    (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((restclient . t))))
 #+END_SRC
 
 ** HTTP client
@@ -798,22 +838,22 @@ Install restclient executor to test HTTP queries in org-mode file
 
 #+BEGIN_SRC emacs-lisp
 (use-package ob-http
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((http . t))))
+    :config
+    (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((http . t))))
 #+END_SRC
 
 ** ~org-roam~
 
 #+begin_src emacs-lisp
 (use-package org-roam
-  :init (setq org-roam-v2-ack t)
-  :custom (org-roam-directory "~/.org-roam")
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-	 ("C-c n f" . org-roam-node-find)
-	 ("C-c n i" . org-roam-node-insert))
-  :config (org-roam-setup))
+    :init (setq org-roam-v2-ack t)
+    :custom (org-roam-directory "~/.org-roam")
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+    ("C-c n f" . org-roam-node-find)
+    ("C-c n i" . org-roam-node-insert))
+    :config (org-roam-setup))
 #+end_src
 
 * Anki
@@ -822,7 +862,7 @@ I save notes in org files and export them as Anki decks to be able to review the
 
 #+BEGIN_SRC emacs-lisp
 (use-package org-anki :quelpa
-  (org-anki :fetcher "github" :repo "mpontus/org-anki"))
+    (org-anki :fetcher "github" :repo "mpontus/org-anki"))
 #+END_SRC
 
 * Diary
@@ -849,13 +889,13 @@ Magit is a Git interface for emacs. It helps tremendously with partial commits, 
 
 #+BEGIN_SRC emacs-lisp
 (use-package magit
-  :bind
-  (("C-x g g" . magit-status)))
+    :bind
+    (("C-x g g" . magit-status)))
 
 (defhydra+ hydra-git ()
-  "magit"
-  ("g" #'magit-status)
-  ("c" #'magit-commit))
+    "magit"
+    ("g" #'magit-status)
+    ("c" #'magit-commit))
 #+END_SRC
 
 *** Make PR links clickable
@@ -872,8 +912,8 @@ Git timemachine allows you to quickly review the history of a signle file
 (package-install 'git-timemachine)
 
 (defhydra+ hydra-git ()
-  "git-timemachine"
-  ("t" git-timemachine))
+    "git-timemachine"
+    ("t" git-timemachine))
 #+END_SRC
 
 #+END_SRC
@@ -882,25 +922,24 @@ Git timemachine allows you to quickly review the history of a signle file
 
 #+BEGIN_SRC emacs-lisp
 (use-package git-gutter
-  :config
-  (setq git-gutter:ask-p nil)
-  (global-git-gutter-mode 1))
-
+    :config
+    (setq git-gutter:ask-p nil)
+    (global-git-gutter-mode 1))
 
 (defhydra+ hydra-git ()
-  "git-gutter"
-  ("e" git-gutter:end-of-hunk)
-  ("m" git-gutter:mark-hunk)
-  ("n" git-gutter:next-hunk)
-  ("i" git-gutter:popup-diff)
-  ("u" git-gutter:popup-hunk)
-  ("p" git-gutter:previous-hunk)
-  ("v" git-gutter:revert-hunk)
-  ("s" git-gutter:stage-hunk)
-  ("$" git-gutter:statistic)
-  ("#" git-gutter:set-start-revision)
-  ("f" git-gutter:next-diff)
-  ("b" git-gutter:previous-diff))
+    "git-gutter"
+    ("e" git-gutter:end-of-hunk)
+    ("m" git-gutter:mark-hunk)
+    ("n" git-gutter:next-hunk)
+    ("i" git-gutter:popup-diff)
+    ("u" git-gutter:popup-hunk)
+    ("p" git-gutter:previous-hunk)
+    ("v" git-gutter:revert-hunk)
+    ("s" git-gutter:stage-hunk)
+    ("$" git-gutter:statistic)
+    ("#" git-gutter:set-start-revision)
+    ("f" git-gutter:next-diff)
+    ("b" git-gutter:previous-diff))
 #+END_SRC
 
 ** Ediff
@@ -915,11 +954,11 @@ Ediff starts in the new frame by defualt. This change makes ediff reuse existing
 
 #+begin_src emacs-lisp
 (defun ediff-copy-both-to-C ()
-  (interactive)
-  (ediff-copy-diff ediff-current-difference nil 'C nil
-                   (concat
-                    (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
-                    (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+    (interactive)
+    (ediff-copy-diff ediff-current-difference nil 'C nil
+    (concat
+    (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+    (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
 (defun add-d-to-ediff-mode-map () (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
 (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
 #+end_src
@@ -933,7 +972,7 @@ Use projectile to traverse the files between projects.
 
 ;; Remove projectile shortcut which violates userspace key binding guidelines
 (with-eval-after-load "projectile"
-  (define-key projectile-mode-map (kbd "C-c p") nil))
+    (define-key projectile-mode-map (kbd "C-c p") nil))
 
 ;; By my own convention, globally accessible key-bindings live under C-x prefix.
 (global-set-key (kbd "C-x p") 'projectile-command-map)
@@ -952,32 +991,32 @@ Show file tree using dired sidebar:
 
 #+BEGIN_SRC emacs-lisp
 (use-package vscode-icon
-  :ensure t
-  :config
-  ;; Apparently emacs can't resize images despite having been compiled
-  ;; with imagemagic support.
-  (advice-add 'vscode-icon-can-scale-image-p :override 'ignore))
+    :ensure t
+    :config
+    ;; Apparently emacs can't resize images despite having been compiled
+    ;; with imagemagic support.
+    (advice-add 'vscode-icon-can-scale-image-p :override 'ignore))
 
 (use-package dired-sidebar
-  :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
-  :requires vscode-icon
-  :ensure t
-  :commands (dired-sidebar-toggle-sidebar)
-  :init
-  (add-hook 'dired-sidebar-mode-hook
-            (lambda ()
-              (unless (file-remote-p default-directory)
-                (auto-revert-mode))))
-  :config
+    :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
+    :requires vscode-icon
+    :ensure t
+    :commands (dired-sidebar-toggle-sidebar)
+    :init
+    (add-hook 'dired-sidebar-mode-hook
+    (lambda ()
+    (unless (file-remote-p default-directory)
+    (auto-revert-mode))))
+    :config
 
-  (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
-  (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
+    (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
+    (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
 
-  (setq dired-sidebar-subtree-line-prefix "__")
-  (setq dired-sidebar-icon-scale 0.1)
-  (setq dired-sidebar-theme 'vscode)
-  (setq dired-sidebar-use-term-integration t)
-  (setq dired-sidebar-use-custom-font t))
+    (setq dired-sidebar-subtree-line-prefix "__")
+    (setq dired-sidebar-icon-scale 0.1)
+    (setq dired-sidebar-theme 'vscode)
+    (setq dired-sidebar-use-term-integration t)
+    (setq dired-sidebar-use-custom-font t))
 #+END_SRC
 
 * Emacs Lisp
@@ -988,7 +1027,7 @@ Paredit helps keeps parentheses ballanced and provides a few useful commands for
 
 #+BEGIN_SRC emacs-lisp
 (use-package paredit
-  :config (add-hook 'emacs-lisp-mode-hook #'paredit-mode))
+    :config (add-hook 'emacs-lisp-mode-hook #'paredit-mode))
 #+END_SRC
 
 Use paredit in eval-expression mode
@@ -1001,25 +1040,25 @@ Custom keybindings.
 
 #+begin_src emacs-lisp
 (defhydra hydra-paredit (paredit-mode-map ""  :exit t)
-  "Paredit"
-  ("M-N" paredit-add-to-next-list)
-  ("M-P" paredit-add-to-previous-list)
-  ("M-SPC"
-   (skip-chars-backward "\r\n\s\t")
-   (when (prog1 (looking-at "[\r\n\s\t]")
-	   (just-one-space -1))
-     (just-one-space 0)))
-  ("C-k" paredit-kill)
-  ("C-M-k" kill-sexp)
-  ("M-U" paredit-convolute-sexp)
-  ("M-H" paredit-backward-slurp-sexp)
-  ("M-L" paredit-forward-slurp-sexp)
-  ("M-K" paredit-forward-barf-sexp)
-  ("C-M-n" paredit-forward-up)
-  ("M-r" paredit-raise-sexp)
-  ("M-s" paredit-splice-sexp-killing-backward)
-  ("M-s" paredit-splice-sexp-killing-backward)
-  ("C-M-y" paredit-yank-pop))
+    "Paredit"
+    ("M-N" paredit-add-to-next-list)
+    ("M-P" paredit-add-to-previous-list)
+    ("M-SPC"
+    (skip-chars-backward "\r\n\s\t")
+    (when (prog1 (looking-at "[\r\n\s\t]")
+    (just-one-space -1))
+    (just-one-space 0)))
+    ("C-k" paredit-kill)
+    ("C-M-k" kill-sexp)
+    ("M-U" paredit-convolute-sexp)
+    ("M-H" paredit-backward-slurp-sexp)
+    ("M-L" paredit-forward-slurp-sexp)
+    ("M-K" paredit-forward-barf-sexp)
+    ("C-M-n" paredit-forward-up)
+    ("M-r" paredit-raise-sexp)
+    ("M-s" paredit-splice-sexp-killing-backward)
+    ("M-s" paredit-splice-sexp-killing-backward)
+    ("C-M-y" paredit-yank-pop))
 
 (use-package paredit)
 #+end_src
@@ -1028,7 +1067,7 @@ Custom keybindings.
 
 #+BEGIN_SRC emacs-lisp
 (use-package macrostep
-  :bind ("C-c e" . macrostep-expand))
+    :bind ("C-c e" . macrostep-expand))
 #+END_SRC
 
 * Javascript
@@ -1041,7 +1080,7 @@ I use simple JS mode for now beacuse it's easier to get into when something goes
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "js"
-  (setq-default js-indent-level 2))
+    (setq-default js-indent-level 2))
 #+END_SRC
 
 Enable automatic pairing and alignment of parentheses and braces:
@@ -1057,7 +1096,7 @@ I often need to sort lines in alphabetical order when working with Javascript.
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "js"
-  (define-key js-mode-map (kbd "C-c s") 'sort-lines))
+    (define-key js-mode-map (kbd "C-c s") 'sort-lines))
 #+END_SRC
 
 ** Formatting
@@ -1086,15 +1125,15 @@ Flycheck will use static analysis tools and highlight errors in the buffer.
 (package-install 'flycheck)
 
 (add-hook 'js-mode-hook
-	  (lambda ()
-	    (flycheck-mode 1)
-	    ;; Unless explicitly told flycheck can choose other
-	    ;; checker which will mess up the chain setup below
-	    (setq-local flycheck-checker 'javascript-eslint)))
+    (lambda ()
+    (flycheck-mode 1)
+    ;; Unless explicitly told flycheck can choose other
+    ;; checker which will mess up the chain setup below
+    (setq-local flycheck-checker 'javascript-eslint)))
 
 (with-eval-after-load "js"
-  (define-key js-mode-map (kbd "M-p") 'flycheck-previous-error)
-  (define-key js-mode-map (kbd "M-n") 'flycheck-next-error))
+    (define-key js-mode-map (kbd "M-p") 'flycheck-previous-error)
+    (define-key js-mode-map (kbd "M-n") 'flycheck-next-error))
 #+END_SRC
 
 ** FlowType Support
@@ -1105,19 +1144,19 @@ Enable Flow checker for flycheck
 (package-install 'flycheck-flow)
 
 (with-eval-after-load "flycheck"
-  (require 'flycheck-flow)
-  (flycheck-add-next-checker 'javascript-eslint 'javascript-flow))
+    (require 'flycheck-flow)
+    (flycheck-add-next-checker 'javascript-eslint 'javascript-flow))
 
 ;; Skip non-annotated files
 (with-eval-after-load "flycheck-flow"
-  (setq flycheck-javascript-flow-args '("--respect-pragma")))
+    (setq flycheck-javascript-flow-args '("--respect-pragma")))
 #+END_SRC
 
 Add .js.flow to javascript extensions
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist
-             '("\\.js.flow\\'" . js-mode))
+    '("\\.js.flow\\'" . js-mode))
 #+END_SRC
 
 Enable completion support for Flow files:
@@ -1143,7 +1182,7 @@ Install typescript mode:
 
 ;; Add .tsx to the list of extensions associated with typescript-mode
 (add-to-list 'auto-mode-alist
-             '("\\.tsx\\'" . typescript-mode))
+    '("\\.tsx\\'" . typescript-mode))
 #+END_SRC
 
 Change default indentation level:
@@ -1165,7 +1204,7 @@ Pressing <kbd>M-j</kbd> while inside a multiline comment allows you to insert a 
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "typescript-mode"
-  (define-key typescript-mode-map (kbd "M-j") 'c-indent-new-comment-line))
+    (define-key typescript-mode-map (kbd "M-j") 'c-indent-new-comment-line))
 #+END_SRC
 
 ** TypeScript Server integraiton
@@ -1176,12 +1215,12 @@ Setup TIDE:
 (package-install 'tide)
 
 (with-eval-after-load "flycheck"
-  (flycheck-def-config-file-var typescript-tslint-typecheck-tsconfig
-      typescript-tslint "tsconfig.json"
+    (flycheck-def-config-file-var typescript-tslint-typecheck-tsconfig
+    typescript-tslint "tsconfig.json"
     :safe #'stringp
     :package-version '(flycheck . "27"))
 
-  (flycheck-define-checker typescript-tslint
+    (flycheck-define-checker typescript-tslint
     "TypeScript style checker using TSLint.
 
 Note that this syntax checker is not used if
@@ -1190,26 +1229,25 @@ non-existing file.
 
 See URL `https://github.com/palantir/tslint'."
     :command ("tslint" "--format" "json"
-              (config-file "--config" flycheck-typescript-tslint-config)
-              (config-file "--project" typescript-tslint-typecheck-tsconfig)
-              (option "--rules-dir" flycheck-typescript-tslint-rulesdir)
-	      (eval flycheck-tslint-args)
-              source-original)
+    (config-file "--config" flycheck-typescript-tslint-config)
+    (config-file "--project" typescript-tslint-typecheck-tsconfig)
+    (option "--rules-dir" flycheck-typescript-tslint-rulesdir)
+    (eval flycheck-tslint-args)
+    source-original)
     :error-parser flycheck-parse-tslint
     :modes (typescript-mode)))
 
-
 ;; Working setup taken directly from TIDE documentaiton
 (defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  ;; (add-to-list 'flycheck-checkers 'typescript-tslint-typecheck)
-  ;; (flycheck-add-next-checker 'typescript-tide 'typescript-tslint-typecheck)
-  ;; (add-to-list 'flycheck-disabled-checkers 'typescript-tslint)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (eldoc-mode +1)
-  (tide-hl-identifier-mode +1))
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    ;; (add-to-list 'flycheck-checkers 'typescript-tslint-typecheck)
+    ;; (flycheck-add-next-checker 'typescript-tide 'typescript-tslint-typecheck)
+    ;; (add-to-list 'flycheck-disabled-checkers 'typescript-tslint)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1))
 
 ;; Disable tide autoformat if prettier is available
 (remove-hook 'before-save-hook 'tide-format-before-save)
@@ -1221,8 +1259,8 @@ Enable completion support:
 
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load "typescript-mode"
-  (add-hook 'typescript-mode-hook 'company-mode)
-  (define-key typescript-mode-map (kbd "TAB") 'company-indent-or-complete-common))
+    (add-hook 'typescript-mode-hook 'company-mode)
+    (define-key typescript-mode-map (kbd "TAB") 'company-indent-or-complete-common))
 #+END_SRC
 
 Enable flycheck in typescript buffers:
@@ -1230,8 +1268,8 @@ Enable flycheck in typescript buffers:
 #+BEGIN_SRC emacs-lisp
 ;; Set up flycheck keybindings
 (with-eval-after-load "tide"
-  (define-key tide-mode-map (kbd "M-p") 'flycheck-previous-error)
-  (define-key tide-mode-map (kbd "M-n") 'flycheck-next-error))
+    (define-key tide-mode-map (kbd "M-p") 'flycheck-previous-error)
+    (define-key tide-mode-map (kbd "M-n") 'flycheck-next-error))
 #+END_SRC
 
 ** Formatting
@@ -1250,16 +1288,16 @@ Some tslint errors are annoying to fix manually.
 
 #+BEGIN_SRC emacs-lisp
 (defun tslint-fix-and-revert ()
-  (interactive)
-  (when (or (not (buffer-modified-p))
-	    ;; Ask for confirmation when reverting modified buffer
-	    (yes-or-no-p (format "Revert buffer from file %s? "
-                                 (buffer-file-name))))
+    (interactive)
+    (when (or (not (buffer-modified-p))
+    ;; Ask for confirmation when reverting modified buffer
+    (yes-or-no-p (format "Revert buffer from file %s? "
+    (buffer-file-name))))
     (shell-command (concat "tslint --fix " (buffer-file-name)))
     (revert-buffer nil 'noconfirm)))
 
 (with-eval-after-load "typescript-mode"
- (define-key typescript-mode-map (kbd "C-c C-r") 'tslint-fix-and-revert))
+    (define-key typescript-mode-map (kbd "C-c C-r") 'tslint-fix-and-revert))
 #+END_SRC
 
 ** Code Folding
@@ -1268,7 +1306,7 @@ Some tslint errors are annoying to fix manually.
 (add-hook 'typescript-mode-hook 'hs-minor-mode)
 
 (with-eval-after-load "typescript-mode"
-  (define-key typescript-mode-map (kbd "C-c C-f") 'hs-toggle-hiding))
+    (define-key typescript-mode-map (kbd "C-c C-f") 'hs-toggle-hiding))
 #+END_SRC
 
 ** Compilation
@@ -1278,7 +1316,7 @@ Colorize tsc messages in ~compilation-mode~:
 #+BEGIN_SRC emacs-lisp
 (require 'ansi-color)
 (defun colorize-compilation-buffer ()
-  (ansi-color-apply-on-region compilation-filter-start (point-max)))
+    (ansi-color-apply-on-region compilation-filter-start (point-max)))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 #+END_SRC
 
@@ -1288,7 +1326,7 @@ Using web-mode for CSS files primarily because it supports comment-continuation 
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist
-             '("\\.css\\'" . web-mode))
+    '("\\.css\\'" . web-mode))
 #+END_SRC
 
 Adjust base indentaiton level:
@@ -1301,7 +1339,7 @@ Disable ~hl-line-mode~ which conflicts with highlighted color literals.
 
 #+BEGIN_SRC emacs-lisp
 (defun disable-hl-line-mode ()
-  (hl-line-mode -1))
+    (hl-line-mode -1))
 
 (add-hook 'css-mode-hook 'disable-hl-line-mode)
 #+END_SRC
@@ -1320,8 +1358,8 @@ I use Elpy for go-to-definition functionality in python source files.
 
 #+BEGIN_SRC emacs-lisp
 (use-package elpy
-  :config
-  (elpy-enable))
+    :config
+    (elpy-enable))
 #+END_SRC
 
 * Markdown
@@ -1356,19 +1394,19 @@ Visual-line-mode ensures lines get broken at word boundaries.
 (package-install 'visual-fill-column)
 
 (with-eval-after-load 'markdown-mode
-  (add-hook 'markdown-mode-hook 'visual-fill-column-mode)
-  (add-hook 'markdown-mode-hook 'visual-line-mode))
+    (add-hook 'markdown-mode-hook 'visual-fill-column-mode)
+    (add-hook 'markdown-mode-hook 'visual-line-mode))
 #+END_SRC
 
 Enable spell checking.
 
 #+BEGIN_SRC emacs-lisp
 (setq ispell-really-aspell nil
-      ispell-really-hunspell t
-      ispell-program-name "hunspell")
+    ispell-really-hunspell t
+    ispell-program-name "hunspell")
 
 (setq ispell-local-dictionary-alist
- '((nil "[[:alpha:]]" "[^[:alpha:]]" "[0-9]" t ("-d" "en_US,ru_RU") nil utf-8)))
+    '((nil "[[:alpha:]]" "[^[:alpha:]]" "[0-9]" t ("-d" "en_US,ru_RU") nil utf-8)))
 
 (add-hook 'markdown-mode-hook 'flyspell-mode)
 #+END_SRC
@@ -1379,25 +1417,25 @@ Install clojure-mode
 
 #+BEGIN_SRC emacs-lisp
 (use-package clojure-mode
-  :ensure t)
+    :ensure t)
 #+END_SRC
 
 Use Lispy to navigate clojure code
 
 #+BEGIN_SRC emacs-lisp
 (use-package lispy
-  :ensure t
-  :hook (clojure-mode . lispy-mode))
+    :ensure t
+    :hook (clojure-mode . lispy-mode))
 #+END_SRC
 
 Add userful clojure commands
 
 #+BEGIN_SRC emacs-lisp
 (use-package cider
-  :ensure t
-  :hook (clojure-mode . cider-mode)
-  :config
-  (setq cider-clojure-cli-global-options "-R:fig"))
+    :ensure t
+    :hook (clojure-mode . cider-mode)
+    :config
+    (setq cider-clojure-cli-global-options "-R:fig"))
 #+END_SRC
 
 * OCaml
@@ -1412,50 +1450,50 @@ Install ocp-indent for better indentation.
 
 #+BEGIN_SRC emacs-lisp
 (use-package ocp-indent
-  :if (executable-find "ocp-indent")
-  :hook (tuareg-mode . ocp-setup-indent))
+    :if (executable-find "ocp-indent")
+    :hook (tuareg-mode . ocp-setup-indent))
 #+END_SRC
 
 Install Merlin for language server integraiton:
 
 #+BEGIN_SRC emacs-lisp
 (use-package merlin
-  :hook (tuareg-mode . merlin-mode)
-  :config
-  ;; Enable jump-to-definition functionality when merlin mode is active
-  (defun install-merlin-xref-backend ()
+    :hook (tuareg-mode . merlin-mode)
+    :config
+    ;; Enable jump-to-definition functionality when merlin mode is active
+    (defun install-merlin-xref-backend ()
     (add-hook 'xref-backend-functions 'merlin-xref-backend nil t))
-  (add-hook 'merlin-mode-hook 'install-merlin-xref-backend))
+    (add-hook 'merlin-mode-hook 'install-merlin-xref-backend))
 
 ;; Install merlin-eldoc for minibuffer tooltips
 (use-package merlin-eldoc
-  :hook (merlin-mode . merlin-eldoc-setup))
+    :hook (merlin-mode . merlin-eldoc-setup))
 #+END_SRC
 
 Enable autocompletion with company-mode:
 
 #+BEGIN_SRC emacs-lisp
 (use-package company
-  :requires merlin
-  :hook (tuareg-mode . company-mode))
+    :requires merlin
+    :hook (tuareg-mode . company-mode))
 #+END_SRC
 
 Enable syntax checking with flycheck-ocaml:
 
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck-ocaml
-  :requires (flycheck merlin)
-  :hook (tuareg-mode . flycheck-ocaml-setup))
+    :requires (flycheck merlin)
+    :hook (tuareg-mode . flycheck-ocaml-setup))
 #+END_SRC
 
 Install Utop for REPL.
 
 #+BEGIN_SRC emacs-lisp
 (use-package utop
-  :if (executable-find "opam")
-  :hook (tuareg-mode . utop-minor-mode)
-  :config
-  (setq utop-command "opam config exec -- utop -emacs"))
+    :if (executable-find "opam")
+    :hook (tuareg-mode . utop-minor-mode)
+    :config
+    (setq utop-command "opam config exec -- utop -emacs"))
 #+END_SRC
 
 * Rust
@@ -1470,8 +1508,8 @@ Use ~racer~ for autocompletion in rust files
 
 #+BEGIN_SRC emacs-lisp
 (use-package racer
-  :requires company
-  :hook (rust-mode . racer-mode))
+    :requires company
+    :hook (rust-mode . racer-mode))
 #+END_SRC
 
 * REST Client
@@ -1482,10 +1520,10 @@ Useful for testing REST api.
 (package-install 'restclient)
 
 (defun configure-restclient ()
-  (setq tab-width 2))
+    (setq tab-width 2))
 
 (with-eval-after-load "restclient"
-  (add-hook 'restclient-mode-hook 'configure-restclient))
+    (add-hook 'restclient-mode-hook 'configure-restclient))
 #+END_SRC
 
 * XML
@@ -1494,47 +1532,47 @@ Useful for testing REST api.
 
 #+begin_src emacs-lisp
 (defun hs-toggle-block ()
-  "Toggle hideshow all."
-  (interactive)
-  (if (hs-already-hidden-p) (hs-show-block) (hs-hide-block)))
+    "Toggle hideshow all."
+    (interactive)
+    (if (hs-already-hidden-p) (hs-show-block) (hs-hide-block)))
 
 (defun hs-toggle-level ()
-  "Toggle hideshow all."
-  (interactive)
-  (save-excursion
+    "Toggle hideshow all."
+    (interactive)
+    (save-excursion
     (let (minp maxp (all-shown t))
-      (when (hs-find-block-beginning)
-	  (setq minp (1+ (point)))
-	  (funcall hs-forward-sexp-func 1)
-	  (setq maxp (1- (point)))
-	  (goto-char minp))
-	(while (progn
-		 (forward-comment (buffer-size))
-		 (and (< (point) maxp)
-                      (re-search-forward hs-block-start-regexp maxp t)))
-	  (when (save-match-data (not (nth 8 (syntax-ppss)))) ; not inside comments or strings
-	    (setq all-shown (and all-shown (not (hs-already-hidden-p))))
-	    (hs-show-block)))
-      (when all-shown
-	(goto-char minp)
-	(hs-hide-level-recursive 1 minp maxp)))))
+    (when (hs-find-block-beginning)
+    (setq minp (1+ (point)))
+    (funcall hs-forward-sexp-func 1)
+    (setq maxp (1- (point)))
+    (goto-char minp))
+    (while (progn
+    (forward-comment (buffer-size))
+    (and (< (point) maxp)
+    (re-search-forward hs-block-start-regexp maxp t)))
+    (when (save-match-data (not (nth 8 (syntax-ppss)))) ; not inside comments or strings
+    (setq all-shown (and all-shown (not (hs-already-hidden-p))))
+    (hs-show-block)))
+    (when all-shown
+    (goto-char minp)
+    (hs-hide-level-recursive 1 minp maxp)))))
 
 (use-package hideshow
-  :bind
-  ("M-ESC" . hs-toggle-block)
-  ("C-M-{" . hs-hide-all)
-  ("C-M-]" . hs-toggle-level)
-  ("C-M-}" . hs-show-all)
-  :config
-  (add-hook 'nxml-mode 'hs-minor-mode)
-  (add-to-list 'hs-special-modes-alist
-               '(nxml-mode
-		 "<!--\\|<[^/>]*[^/]>"
-		 "-->\\|</[^/>]*[^/]>"
+    :bind
+    ("M-ESC" . hs-toggle-block)
+    ("C-M-{" . hs-hide-all)
+    ("C-M-]" . hs-toggle-level)
+    ("C-M-}" . hs-show-all)
+    :config
+    (add-hook 'nxml-mode 'hs-minor-mode)
+    (add-to-list 'hs-special-modes-alist
+    '(nxml-mode
+    "<!--\\|<[^/>]*[^/]>"
+    "-->\\|</[^/>]*[^/]>"
 
-		 "<!--"
-		 sgml-skip-tag-forward
-		 nil)))
+    "<!--"
+    sgml-skip-tag-forward
+    nil)))
 #+end_src
 
 * Bolt
@@ -1543,10 +1581,9 @@ Bolt is a language for schema modeleing in firebase.
 
 #+BEGIN_SRC emacs-lisp
 (quelpa '(bolt-mode
-	  :repo "mpontus/bolt-mode"
-	  :fetcher github))
+    :repo "mpontus/bolt-mode"
+    :fetcher github))
 #+END_SRC
-
 
 * Terraform
 
@@ -1556,8 +1593,8 @@ Enable syntax highlighting for terraform mode
 (use-package terraform-mode)
 
 (use-package hcl-mode
-  :quelpa
-  (hcl-mode :fetcher github :repo "mpontus/emacs-hcl-mode"))
+    :quelpa
+    (hcl-mode :fetcher github :repo "mpontus/emacs-hcl-mode"))
 #+END_SRC
 
 *** LSP
@@ -1566,13 +1603,54 @@ Enable autocompletion using LSP
 
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-mode
-  :hook terraform-mode
-  :config
-  (add-to-list 'lsp-language-id-configuration '(terraform-mode . "terraform"))
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection '("~/terraform-ls" "serve"))
-		    :major-modes '(terraform-mode)
-		    :server-id 'terraform-ls)))
-
+    :hook terraform-mode
+    :config
+    (add-to-list 'lsp-language-id-configuration '(terraform-mode . "terraform"))
+    (lsp-register-client
+    (make-lsp-client :new-connection (lsp-stdio-connection '("~/terraform-ls" "serve"))
+    :major-modes '(terraform-mode)
+    :server-id 'terraform-ls)))
 
 #+END_SRC
+* Ledger
+
+#+begin_src emacs-lisp
+(use-package ledger-mode
+    :init
+    (setq ledger-clear-whole-transactions t)
+    :mode "\\.dat\\'")
+
+(with-eval-after-load 'ledger-mode
+    (define-key ledger-mode-map (kbd "M-RET") #'newline-and-indent))
+#+end_src
+
+Add keybinding to easily open a ledger file
+
+#+begin_src emacs-lisp
+(defun find-ledger-file ()
+    (interactive)
+    (pop-to-buffer (find-file-noselect "~/ledger.dat") nil))
+
+(define-key help-map (kbd "l") #'find-ledger-file)
+#+end_src
+
+In order not to have to worry about formatting as I'm editing the ledger file, I add a format hook on save.
+
+#+begin_src emacs-lisp
+(define-minor-mode ledger-format-on-save-mode
+    "Format ledger buffer on save" nil nil nil
+    (if ledger-format-on-save-mode
+    (add-hook 'before-save-hook #'ledger-mode-clean-buffer nil t)
+    (remove-hook 'before-save-hook #'ledger-mode-clean-buffer t)))
+
+(add-hook 'ledger-mode-hook #'ledger-format-on-save-mode)
+(add-hook 'ledger-mode-hook #'ledger-format-on-save-mode)
+#+end_src
+
+#+CAPTION: Hotkeys
+|--------------+------------------------|
+| key sequence | command                |
+|--------------+------------------------|
+| C-c C-a      | ledger-add-transaction |
+| C-c C-o C-r  | ledger-report          |
+|--------------+------------------------|

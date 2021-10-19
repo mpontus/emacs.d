@@ -207,6 +207,12 @@ Find an unused keybinding.
 #+end_src
 
 ** Buffer management
+Set up some easily accissible keybindings for buffer management
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c C-q") #'quit-window)
+#+end_src
+
 ** Text manipulation
 ** Better defaults
 

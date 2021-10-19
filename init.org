@@ -344,6 +344,13 @@ Change default emacs appearance
 (setq initial-frame-alist '((fullscreen . maximized)))
 #+end_src
 
+Restore the last used theme when starting emacs
+
+#+begin_src emacs-lisp
+(use-package remember-last-theme
+  :config (remember-last-theme-enable))
+#+end_src
+
 Make it easy to adjust text scale in all windows
 
 #+begin_src emacs-lisp

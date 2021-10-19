@@ -747,12 +747,6 @@ Now setup some keybindings
     ("C-c i p" . list-packages))
 #+end_src
 
-** Icicles
-#+begin_src emacs-lisp
-(use-package icicles
-    :quelpa (icicles :fetcher github :repo "emacsmirror/icicles")
-    :config (icy-mode 1))
-#+end_src
 * Elisp
 
 ** Debugging

@@ -29,6 +29,12 @@ Execute the code block below to bootstrap the ~init.el~ file.
   <<runtime-configuration>>)
 #+END_SRC
 
+Extract [[info:emacs#Customization][Customization]] into a separate file to prevent it from being overriden when ~init.el~ is rebuilt.
+
+#+begin_src emacs-lisp
+(setq custom-file (locate-user-emacs-file "custom.el"))
+#+end_src
+
 ** Package Manager
 
 Setup builtin package manager.

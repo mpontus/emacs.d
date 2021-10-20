@@ -763,6 +763,15 @@ Now setup some keybindings
 
 * Elisp
 
+** Evaluation
+
+Replace boring old eval sexp with its prettier counterpart.
+
+#+begin_src emacs-lisp
+(use-package pp
+  :bind ([remap eval-expression] . #'pp-eval-expression))
+#+end_src
+
 ** Debugging
 
 #+begin_src emacs-lisp

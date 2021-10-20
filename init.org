@@ -334,7 +334,6 @@ I often need to copy contents of the entire buffer somewhere else. This shortcut
 Change default emacs appearance
 
 #+BEGIN_SRC emacs-lisp
-
 (set-frame-font "Hack-12" 'keep-size t)
 
 ;; Leuven is a light theme with supporting many modes
@@ -561,46 +560,61 @@ Configure company-mode
 (use-package lsp-mode)
 #+END_SRC
 
-** Ivy / Counsel / Swiper
+** Completing Read
 
 Install ivy with some extensions.
 
 #+begin_src emacs-lisp
 (use-package ivy
-    :bind
-    ("C-c r" . ivy-resume)
-    :config
-    (define-key ivy-mode-map (kbd "C-c C-c") 'ivy-restrict-to-matches))
+    :bind ("C-c r" . ivy-resume)
+    :config (ivy-mode t))
+
+(with-eval-after-load 'ivy
+  (define-key ivy-minibuffer-map (kbd "C-c C-c")
+    #'ivy-restrict-to-matches))
 #+end_src
 
 Replace Isearch with Swiper, but not inside the minibuffer.
 
 #+begin_src emacs-lisp
-(use-package swiper :bind ("C-c s" . swiper))
+(define-minor-mode swiper-mode
+  "Remap isearch keybindings with swiper"
+  :keymap
+  '(([remap isearch-forward] . swiper-isearch)
+    ([remap isearch-backward] . swiper-isearch-backward)
+    ([remap isearch-forward-regexp] . swiper)
+    ([remap isearch-backward-regexp] . swiper-backward))
+  :global t)
+
+(use-package swiper
+  :config (swiper-mode))
 #+end_src
 
 Add various counsel commands:
 
 #+begin_src emacs-lisp
+(defhydra hydra-counsel (global-map "C-c c")
+  ""
+  ("a" counsel-ag)
+  ("b" counsel-bookmark)
+  ("c" counsel-imenu)
+  ("d a" counsel-apropos)
+  ("d b" counsel-descbinds)
+  ("d f" counsel-describe-function)
+  ("d o" counsel-describe-face)
+  ("d v" counsel-describe-variable)
+  ("f f" counsel-find-file)
+  ("f i" counsel-info-lookup-symbol)
+  ("f l" counsel-find-library)
+  ("l l" counsel-load-library)
+  ("l t" counsel-load-theme)
+  ("m" counsel-mark-ring)
+  ("o" counsel-faces)
+  ("y" counsel-yank-pop))
+
 (use-package counsel
-    :bind
-    ("C-c M-x" . counsel-M-x)
-    ("C-c c a" . counsel-ag)
-    ("C-c c b" . counsel-bookmark)
-    ("C-c c c" . counsel-imenu)
-    ("C-c c d a" . counsel-apropos)
-    ("C-c c d b" . counsel-descbinds)
-    ("C-c c d f" . counsel-describe-function)
-    ("C-c c d o" . counsel-describe-face)
-    ("C-c c d v" . counsel-describe-variable)
-    ("C-c c f f" . counsel-find-file)
-    ("C-c c f i" . counsel-info-lookup-symbol)
-    ("C-c c f l" . counsel-find-library)
-    ("C-c c l l" . counsel-load-library)
-    ("C-c c l t" . counsel-load-theme)
-    ("C-c c m" . counsel-mark-ring)
-    ("C-c c o" . counsel-faces)
-    ("C-c c y" . counsel-yank-pop))
+  :bind ("C-c c" . #'hydra-counsel/body)
+  :config (counsel-mode t))
 #+end_src
 
 Swiper Keybindings:

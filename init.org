@@ -829,15 +829,6 @@ Configure editing source block files
 (setq org-src-window-setup 'other-window)
 #+end_src
 
-** Keybindings
-
-#+begin_src emacs-lisp
-;;; Edit source block with C-.
-(define-key org-mode-map (kbd "C-.") #'org-edit-special)
-(define-key org-src-mode-map (kbd "C-c C-c") #'org-edit-src-exit)
-(define-key org-src-mode-map (kbd "C-c C-q") #'org-edit-src-abort)
-#+end_src
-
 ** Shell
 
 Enable shell source blocks

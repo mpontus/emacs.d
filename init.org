@@ -1683,3 +1683,99 @@ In order not to have to worry about formatting as I'm editing the ledger file, I
 | C-c C-a      | ledger-add-transaction |
 | C-c C-o C-r  | ledger-report          |
 |--------------+------------------------|
+
+*** COMMENT Reports
+
+
+#+begin_src emacs-lisp
+(use-package transient)			;
+
+(defconst ledger-commands
+  ["Commands"
+   [("a" "account" keyboard-quit)]
+   [("ba" "balance" keyboard-quit)]
+   [("bu" "budget" keyboard-quit)]
+   [("cl" "cleared" keyboard-quit)]
+   [("com" "commodities" keyboard-quit)]
+   [("con" "convert" keyboard-quit)]
+   [("cs" "csv" keyboard-quit)]
+   [("en" "entry" keyboard-quit)]
+   [("em" "emacs" keyboard-quit)]
+   [("eq" "equity" keyboard-quit)]
+   [("pa" "payees" keyboard-quit)]
+   [("pricem" "pricemap" keyboard-quit)]
+   [("prices" "prices" keyboard-quit)]
+   [("priced" "pricedb" keyboard-quit)]
+   [("prin" "print" keyboard-quit)]
+   [("pu" "push" keyboard-quit)]
+   [("po" "pop" keyboard-quit)]
+   [("r" "register" keyboard-quit)]
+   [("ser" "server" keyboard-quit)]
+   [("sel" "select" keyboard-quit)]
+   [("so" "source" keyboard-quit)]
+   [("st" "stats" keyboard-quit)]
+   [("x" "xml" keyboard-quit)]
+   ])
+
+
+(transient-define-prefix
+  ledger-report-register (&optional report-query)
+  ""
+  ["Options"
+   ("-A" "Show the running average, rather" "--average")
+   ("-c" "Don't show postings beyond the" "--current")
+   ("-X" "enter commodity" "--exchange=")
+   ("-G" "Show any gains (or losses) in" "--gain")
+   ("--head" "Only show the top number post" "--head=")
+   ("-H" "" "--historical")
+   ("--invert" "Invert the value of amounts" "--invert")
+   ("-V" "Show current market values for" "--market")
+   ("-p" "--period" "--period=")
+   ("-r" "Show postings that are related" "--related")
+   ("-S" "enter value-expression" "--sort=")
+   ("--tail" "Only show the last number post‐" "--tail=")
+   ("-U" "" "--uncleared")
+   ("-P" "Group postings by common payee" "--by-payee")
+   ("-D" "Group postings by day." "--daily")
+   ("-W" "Group postings by week" "--weekly")
+   ("--start-of-week" "enter day" "--start-of-week=")
+   ("-M" "Group postings by month." "--monthly")
+   ("--quarterly" "Group postings by fiscal quar‐" "--quarterly")
+   ("-Y" "Group postings by year." "--yearly")
+   ("--days-of-week" "Group postings by the day of the" "--days-of-week")
+   ("-s" "Group all postings together." "--subtotal")]
+  ["Commands"
+   ()])
+
+
+(transient-define-prefix ledger-report ()
+  "Run ledger report"
+  ["Options"
+   ("-r" "Do not treat root commits as boundaries" "--root")]
+  ["Commands"
+   [("a" "account" keyboard-quit)]
+   [("ba" "balance" keyboard-quit)]
+   [("bu" "budget" keyboard-quit)]
+   [("cl" "cleared" keyboard-quit)]
+   [("com" "commodities" keyboard-quit)]
+   [("con" "convert" keyboard-quit)]
+   [("cs" "csv" keyboard-quit)]
+   [("en" "entry" keyboard-quit)]
+   [("em" "emacs" keyboard-quit)]
+   [("eq" "equity" keyboard-quit)]
+   [("pa" "payees" keyboard-quit)]
+   [("pricem" "pricemap" keyboard-quit)]
+   [("prices" "prices" keyboard-quit)]
+   [("priced" "pricedb" keyboard-quit)]
+   [("prin" "print" keyboard-quit)]
+   [("pu" "push" keyboard-quit)]
+   [("po" "pop" keyboard-quit)]
+   [("r" "register" keyboard-quit)]
+   [("ser" "server" keyboard-quit)]
+   [("sel" "select" keyboard-quit)]
+   [("so" "source" keyboard-quit)]
+   [("st" "stats" keyboard-quit)]
+   [("x" "xml" keyboard-quit)]
+   ])
+#+end_src
+

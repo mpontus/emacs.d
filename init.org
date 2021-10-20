@@ -907,9 +907,7 @@ Configuration for Version Control tools
 Magit is a Git interface for emacs. It helps tremendously with partial commits, rebase and history browsing.
 
 #+BEGIN_SRC emacs-lisp
-(use-package magit
-    :bind
-    (("C-x g g" . magit-status)))
+(use-package magit)
 
 (defhydra+ hydra-git ()
     "magit"

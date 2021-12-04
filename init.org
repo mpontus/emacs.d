@@ -29,10 +29,22 @@ Execute the code block below to bootstrap the ~init.el~ file.
   <<runtime-configuration>>)
 #+END_SRC
 
-Extract [[info:emacs#Customization][Customization]] into a separate file to prevent it from being overriden when ~init.el~ is rebuilt.
+** Customization
+
+Customization is another way by which emacs configuration can be
+adjusted. 
 
 #+begin_src emacs-lisp
+;; Extract customization into a separate file to prevent it from being
+;; overriden when ~init.el~ is rebuilt.
 (setq custom-file (locate-user-emacs-file "custom.el"))
+
+;; Save custom theme customization before exiting emacs
+(use-package cus-theme :ensure nil
+  :commands custom-theme-save
+  :hook (kill-emacs . custom-theme-save)
+  ;; Don't ask for confirmation when installing themes
+  :config (setq custom-safe-themes t))
 #+end_src
 
 ** Package Manager

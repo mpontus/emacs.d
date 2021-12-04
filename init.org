@@ -64,23 +64,6 @@ Setup builtin package manager.
     (package-refresh-contents 'async))
 #+END_SRC
 
-*** Package listing
-
-Provides star count and homepage link
-
-#+begin_src emacs-lisp
-(use-package paradox
-    :init (paradox-enable))
-#+end_src
-
-|--------------+-------------------------------|
-| key sequence | command                       |
-|--------------+-------------------------------|
-| v            | paradox-menu-visit-homepage   |
-| l            | paradox-menu-view-commit-list |
-| f            | package-menu-filter           |
-|--------------+-------------------------------|
-
 *** Use Package
 
 Enable more convenient configuration for external packages.

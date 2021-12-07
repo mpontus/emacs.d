@@ -197,8 +197,13 @@ Find an unused keybinding.
     (message "Window %s dedicated"
     (if (window-dedicated-p window) "is" "is not")))
 
-(defhydra+ hydra-windows (global-map "C-c w")
-    ("d" #'toggle-window-dedicated-p))
+(defhydra+ hydra-windows ()
+  ("." #'toggle-window-dedicated-p
+   (propertize "dedicated" 'face
+	       (if (window-dedicated-p)
+		   'transient-active-infix
+		 'transient-inactive-value))
+   :exit t))
 #+end_src
 
 ** Buffer management

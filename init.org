@@ -1637,6 +1637,13 @@ Useful for testing REST api.
     nil)))
 #+end_src
 
+*** Origami
+
+#+begin_src emacs-lisp
+(use-package origami
+  :bind ("M-ESC" . #'origami-toggle-node))
+#+end_src
+
 * Bolt
 
 Bolt is a language for schema modeleing in firebase.

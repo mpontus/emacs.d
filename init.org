@@ -1198,37 +1198,6 @@ Flycheck will use static analysis tools and highlight errors in the buffer.
     (define-key js-mode-map (kbd "M-n") 'flycheck-next-error))
 #+END_SRC
 
-** FlowType Support
-
-Enable Flow checker for flycheck
-
-#+BEGIN_SRC emacs-lisp
-(package-install 'flycheck-flow)
-
-(with-eval-after-load "flycheck"
-    (require 'flycheck-flow)
-    (flycheck-add-next-checker 'javascript-eslint 'javascript-flow))
-
-;; Skip non-annotated files
-(with-eval-after-load "flycheck-flow"
-    (setq flycheck-javascript-flow-args '("--respect-pragma")))
-#+END_SRC
-
-Add .js.flow to javascript extensions
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'auto-mode-alist
-    '("\\.js.flow\\'" . js-mode))
-#+END_SRC
-
-Enable completion support for Flow files:
-
-#+BEGIN_SRC emacs-lisp
-(quelpa '(flow-completion-at-point :fetcher github :repo "mpontus/emacs-flow-completion-at-point"))
-
-(add-hook 'js-mode-hook 'flow-completion-at-point-mode)
-#+END_SRC
-
 * Typescript
 
 Typescript is a language that compiles to javascript.

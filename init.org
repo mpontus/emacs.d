@@ -1382,6 +1382,37 @@ Colorize tsc messages in ~compilation-mode~:
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 #+END_SRC
 
+* GraphQL
+
+Firstly we neeed to install graphql-mode for syntax highlighting
+
+#+begin_src emacs-lisp
+(use-package graphql-mode
+  :ensure t)
+
+(use-package lsp-mode
+  ;; :config
+  ;; (lsp-register-client
+  ;;  (make-lsp-client
+  ;;  :new-connection
+  ;;  (lsp-tcp-connection
+  ;;   (lambda (port)
+  ;;     `("graphql-lsp" "server" "-m" "stream" "-p"
+  ;; 	,(number-to-string port))))
+  ;;  :major-modes '(graphql-mode)
+  ;;  :initialization-options (lambda () `())
+  ;;  :server-id 'graphql))
+  ;; (add-to-list 'lsp-language-id-configuration
+  ;; 	       '(graphql-mode . "graphql"))
+  )
+#+end_src
+
+Then we can edit GraphQL source blocks inside org-mode buffer
+
+#+begin_src emacs-lisp
+(use-package ob-graphql)
+#+end_src
+
 * CSS
 
 Using web-mode for CSS files primarily because it supports comment-continuation with ~M-j~.

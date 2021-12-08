@@ -377,6 +377,8 @@ Highlight current line:
 (add-hook 'prog-mode-hook 'hl-line-mode)
 #+END_SRC
 
+*** Line numbers
+
 Show line numbers in programming modes:
 
 #+BEGIN_SRC emacs-lisp

@@ -221,6 +221,12 @@ Set up some easily accissible keybindings for buffer management
 (global-set-key (kbd "C-c C-q") #'quit-window)
 #+end_src
 
+Quick access to buffer list
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c C-b") 'ibuffer-other-window)
+#+end_src
+
 ** Text manipulation
 ** Better defaults
 

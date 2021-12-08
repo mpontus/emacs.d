@@ -348,10 +348,7 @@ I often need to copy contents of the entire buffer somewhere else. This shortcut
 Change default emacs appearance
 
 #+BEGIN_SRC emacs-lisp
-(set-frame-font "Hack-12" 'keep-size t)
-
-;; Leuven is a light theme with supporting many modes
-(load-theme 'leuven 'no-confirm)
+(set-frame-font "Hack-10" 'keep-size t)
 
 ;; Start emacs in fullscreen
 (setq initial-frame-alist '((fullscreen . maximized)))

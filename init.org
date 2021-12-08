@@ -432,8 +432,17 @@ It's easier to use Super+ESC to switch between frames on HHKB:
 How windows are arranged within a frame.
 
 #+begin_src emacs-lisp
-;; I don't think I ever want more than 1 split.
-(setq split-width-threshold 104)
+(setq split-width-threshold 74)
+(setq split-height-threshold 20)
+
+(defun split-window-sensibly-horizontally (&optional window)
+  "Like `split-window-sensibly' but prefer horizontal splits"
+  (or (let ((split-height-threshold most-positive-fixnum))
+	(split-window-sensibly window))
+      (split-window-sensibly window)))
+
+(setq split-window-preferred-function
+      #'split-window-sensibly-horizontally)
 #+end_src
 
 ** Shell

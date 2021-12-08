@@ -1813,6 +1813,35 @@ In order not to have to worry about formatting as I'm editing the ledger file, I
    ])
 #+end_src
 
+*  Docker
+#+begin_src emacs-lisp
+(defun ivy-docker-compose-logs (args)
+  "Completing read for `docker-compose-logs'"
+  (interactive (list (transient-args transient-current-command)))
+  (let ((enable-recursive-minibuffers t))
+    (ivy-read "Service: " (docker-compose-services)
+              :require-match t
+	      :action
+	      (lambda (service)
+		(docker-compose-run-docker-compose-async
+		 "logs" args (list service)))
+              :caller 'ivy-docker-compose-logs)))
+
+(use-package docker
+  :bind (("C-c d" . docker))
+  :config
+  (transient-append-suffix 'docker-compose-logs
+    'docker-compose-run-action-for-one-service
+    '("I" "Logs (Ivy)" ivy-docker-compose-logs))
+  ;; (add-to-list 'display-buffer-alist
+  ;;   '("^\\*docker-compose logs .*\\*$" display-buffer-same-window))
+  )
+
+(use-package docker-tramp)
+
+
+#+end_src
+
 * NixOS
 
 Install nix-mode for editing ~.nix~ files

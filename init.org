@@ -1813,3 +1813,51 @@ In order not to have to worry about formatting as I'm editing the ledger file, I
    ])
 #+end_src
 
+* NixOS
+
+Install nix-mode for editing ~.nix~ files
+
+#+begin_src emacs-lisp
+(use-package nix-mode)
+#+end_src
+
+Use rnix language server for advanced editing features.
+
+#+begin_src emacs-lisp
+;; (defalias 'lsp--nix-dependency-path #'lsp--system-path)
+(cl-defun lsp--nix-dependency-path (&key path &allow-other-keys)
+  "Return npm dependency PATH for PACKAGE."
+  (lsp--system-path path))
+
+(cl-defun lsp--nix-dependency-install (callback error-callback &key package &allow-other-keys)
+  (if-let ((nix-env-binary (executable-find "nix-env")))
+      (lsp-async-start-process callback
+                               error-callback
+                               nix-env-binary
+                               "-i"
+			       package)
+    (lsp-log "Unable to install %s via `nix-env' because it is not present" package)
+    nil))
+
+(use-package lsp-mode
+  :config
+  (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+  (plist-put lsp-deps-providers :nix
+	     (list :path #'lsp--nix-dependency-path
+                   :install #'lsp--nix-dependency-install))
+  (lsp-dependency 'rnix-lsp
+                  ;; '(:system "rnix-lsp")
+                  '(:nix :package "rnix-lsp"
+			 :path "rnix-lsp"))
+  (lsp-register-client
+   (make-lsp-client :new-connection
+		    (lsp-stdio-connection
+		     (lambda ()
+		       (list (lsp-package-path 'rnix-lsp))))
+                    :major-modes '(nix-mode)
+		    :remote? t
+                    :server-id 'nix
+		    :download-server-fn
+		    (lambda (_client callback error-callback _update?)
+                      (lsp-package-ensure 'rnix-lsp callback error-callback)))))
+#+end_src

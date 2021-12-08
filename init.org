@@ -206,6 +206,14 @@ Find an unused keybinding.
    :exit t))
 #+end_src
 
+*** Sidebar
+
+Install treemacs
+
+#+begin_src emacs-lisp
+(use-package treemacs)
+#+end_src
+
 ** Buffer management
 Set up some easily accissible keybindings for buffer management
 

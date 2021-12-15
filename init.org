@@ -1,4 +1,4 @@
-# -*- org-content-indentation: 0; org-src-preserve-indentation: t; -*-
+# -*- org-cappendontent-indentation: 0; org-src-preserve-indentation: t; -*-
 #+TITLE: Emacs Init File
 #+STARTUP: showall
 #+PROPERTY: header-args :tangle no :noweb yes :noweb-ref runtime-configuration :results silent
@@ -1047,11 +1047,9 @@ Buffer contents
 
 (use-package org
   :config
-  (add-hook 'org-mode-hook
-	    (lambda ()
-	      (visual-fill-column-mode t)
-	      (toggle-truncate-lines t)
-	      (toggle-word-wrap -1))))
+  (add-hook 'org-mode-hook #'visual-fill-column-mode)
+  (add-hook 'org-mode-hook #'toggle-truncate-lines)
+  (add-hook 'org-mode-hook #'toggle-word-wrap))
 #+end_src
 
 
@@ -1090,7 +1088,8 @@ Configure keybindings to open results in dedicated buffer
     (org-view-narrow-to-block)))
 
 (with-eval-after-load 'org
-  (define-key org-mode-map (kbd "C-c v") #'org-view-indirect-buffer))
+  (define-key org-mode-map (kbd "C-c C-v")
+    #'org-view-indirect-buffer))
 #+end_src
 
 ** Keybindings
@@ -1147,31 +1146,86 @@ I save notes in org files and export them as Anki decks to be able to review the
     (org-anki :fetcher "github" :repo "mpontus/org-anki"))
 #+END_SRC
 
-* Diary
-
-Trying out jounraling.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'diary-mode-hook 'visual-line-mode)
-(add-hook 'diary-mode-hook 'visual-fill-column-mode)
-#+END_SRC
-
 * Git
 
 Configuration for Version Control tools
 
 #+begin_src emacs-lisp
-(defhydra hydra-git (global-map "C-c g")
-  "git")
-(global-set-key (kbd "C-c g") #'hydra-git/body)
-#+end_src
+(pretty-hydra-define hydra-toggle
+  (global-map "C-c" :color red)
+  ("Toggle"
+   (("f" auto-fill-mode "auto-fill-mode" :color blue)
+    ("w" whitespace-mode "whitespace-mode" :color blue)
+    ("e" toggle-debug-on-error "debug-on-error" :color blue)
+    ("q" toggle-debug-on-quit "quit" :color blue))))
 
-#+begin_src emacs-lisp
-;; (quelpa '(hydra-posframe :fetcher github :repo "mpontus/hydra-posframe"))
-(use-package hydra-posframe
-  :quelpa
-  (hydra-posframe :fetcher github :repo "mpontus/hydra-posframe")
-  :hook (after-init . hydra-posframe-enable))
+(pretty-hydra-define hydra-magit ()
+  ("Magit"
+   (("g" magit-status "status" :exit t)
+    ("c" magit-commit-create "commit" :exit t))))
+
+(pretty-hydra-define hydra-git-gutter ()
+  ("Hunk"
+   (("n" git-gutter:next-hunk "next")
+    ("p" git-gutter:previous-hunk "previous")
+    ("s" git-gutter:stage-hunk "stage")
+    ("v" git-gutter:revert-hunk "revert")
+    ("m" git-gutter:mark-hunk "mark")
+    ;; TODO: pressing "o" twice shuld toggle popup off
+    ("o" git-gutter:popup-hunk "popup" :toggle t))))
+
+(let ((heads (append hydra-magit/heads-plist
+		     hydra-git-gutter/heads-plist)))
+  (setq hydra-magit/heads-plist heads))
+
+
+;; (pretty-hydra-define hydra-git-timemachine ()
+;;   ("Git Timemachine"
+;;    (("t" git-timemachine "timemachine" :exit t)
+;;     ("b" git-timemachine-blame "blame" :exit t)
+;;     ("p" git-timemachine-show-previous-revision "back")
+;;     ("n" git-timemachine-show-next-revision "forward"))))
+
+;; (eval
+;;  (macroexpand-all
+;;   `(pretty-hydra-define hydra-git ()
+;;      (,@(append hydra-magit/heads-plist
+;; 		hydra-git-timemachine/heads-plist
+;; 		hydra-git-gutter/heads-plist)))))
+
+(defvar hydra-git/saved-configuration)
+(use-package hydra
+  :pretty-hydra
+  (hydra-git
+   (:color amaranth
+    :post 
+    (if debug-on-error (debug hydra-git/saved-configuration)
+      (set-window-configuration hydra-git/saved-configuration)))
+   ("Magit"
+    (("g" magit-status "status" :exit t)
+     ("c" (call-interactively
+	   (if prefix-arg 'magit-commit 'magit-commit-create))
+      "commit" :exit t))
+    ""
+    (("n" git-gutter:next-hunk "next")
+     ("p" git-gutter:previous-hunk "previous"))
+    "Hunk"
+    (("s" git-gutter:stage-hunk "stage")
+     ("v" git-gutter:revert-hunk "revert"))
+    ""
+    (;; TODO: pressing "o" twice shuld toggle popup off
+     ("o" git-gutter:popup-hunk "popup" :toggle t)
+     ("m" git-gutter:mark-hunk "mark"))
+    "Git Timemachine"
+    (("t" hydra-git-timemachine "timemachine" :exit t)
+     ("b" git-timemachine-blame "blame" :exit t))))
+  :config
+  (add-function
+   :around (symbol-function 'hydra-git/body)
+   (lambda (f &rest args)
+     (let ((hydra-git/saved-configuration
+	    (current-window-configuration (selected-frame))))
+       (apply f args)))))
 #+end_src
 
 ** Magit
@@ -1181,15 +1235,12 @@ Magit is a Git interface for emacs. It helps tremendously with partial commits, 
 #+BEGIN_SRC emacs-lisp
 (use-package magit
   :config
-  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
-
-(defhydra+ hydra-git ()
-    "magit"
-    ("g" #'magit-status)
-    ("c" #'magit-commit))
+  (setq magit-save-repository-buffers nil)
+  (setq magit-display-buffer-function
+	'magit-display-buffer-same-window-except-diff-v1))
 #+END_SRC
 
-*** Make PR links clickable
+Make PR links clickable
 
 #+begin_src emacs-lisp
 (add-hook 'magit-process-mode-hook 'goto-address-mode)
@@ -1215,44 +1266,7 @@ Git timemachine allows you to quickly review the history of a signle file
 (use-package git-gutter
   :config
   (setq git-gutter:ask-p nil)
-  (global-git-gutter-mode 1)
-  ;; :mode-hydra
-  ;; ("Hunk" (("n" git-gutter:next-hunk "next-hunk")
-  ;; 	   ("p" git-gutter:previous-hunk "previous-hunk")
-  ;; 	   ("e" git-gutter:end-of-hunk "end-of-hunk")
-  ;; 	   ("m" git-gutter:mark-hunk "mark-hunk")
-  ;; 	   ("v" git-gutter:revert-hunk "revert-hunk")
-  ;; 	   ("s" git-gutter:stage-hunk "stage-hunk")))
-  ;; ("Popup" (("i" git-gutter:popup-diff "popup-diff")
-  ;; 	    ("u" git-gutter:popup-hunk "popup-hunk")))
-  ;; ("Diff" (("f" git-gutter:next-diff "next-diff")
-  ;; 	   ("b" git-gutter:previous-diff "previous-diff")))
-  ;; ("Misc" (("#" git-gutter:set-start-revision "set-start-revision")
-  ;; 	   ("$" git-gutter:statistic "statistic")))  
-  )
-
-
-(pretty-hydra-define hydra-git
-  ()
-  (""
-   (("g" magit-status :exit t)
-    ("t" git-timemachine :exit t))
-   "Hunk"
-   (("n" git-gutter:next-hunk "next")
-    ("p" git-gutter:previous-hunk "previous"))
-   ""
-   (("s" git-gutter:stage-hunk "stage")
-    ("v" git-gutter:revert-hunk "revert"))
-   ""
-   (("o" git-gutter:popup-hunk "popup")
-    ("m" git-gutter:mark-hunk "mark"))
-   "Git Timemachine"
-   (("t" git-timemachine "timemachine" :exit t)
-    ("b" git-timemachine-blame "blame" :exit t))))
-
-(use-package hydra
-  :bind
-  ("C-c g" . #'hydra-git/body))
+  (global-git-gutter-mode 1))
 #+END_SRC
 
 ** Ediff

@@ -1,4 +1,4 @@
-# -*- orcontent-indentation: 0; org-src-preserve-indentation: t; -*-
+# -*- org-content-indentation: 0; org-src-preserve-indentation: t; -*-
 #+TITLE: Emacs Init File
 #+STARTUP: showall
 #+PROPERTY: header-args :tangle no :noweb yes :noweb-ref runtime-configuration :results silent
@@ -206,11 +206,12 @@ Evaluate changed source blocks on save
 
 #+begin_src emacs-lisp
 (defun find-init-org-file ()
-    "Open init.org from user directory"
+  "Open init.org from user directory"
     (interactive
-    (find-file (locate-user-emacs-file "init.org"))))
+    (find-file-noselect
+     (locate-user-emacs-file "init.org"))))
 
-(defhydra hydra-init-org (global-map "<f1>")
+(defhydra hydra-init-org (global-map "C-c")
     "init.org"
     ("i" find-init-org-file :exit t))
 #+end_src
@@ -734,7 +735,15 @@ Passwords and authentication credentials are stored in [[./secrets.el.gpg]]
   (when (file-exists-p secrets-file)
     (load secrets-file 'noerror)))
 #+end_src
-** Buffer editing
+** Buffer editing (buffer contents)
+
+*** Revert buffer command
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c v") 'revert-buffer)
+#+end_src
+    
+*** Swiper
 
 Replace Isearch with Swiper, but not inside the minibuffer.
 
@@ -742,10 +751,13 @@ Replace Isearch with Swiper, but not inside the minibuffer.
 (define-minor-mode swiper-mode
   "Remap isearch keybindings with swiper"
   :keymap
-  '(([remap isearch-forward] . swiper-isearch)
-    ([remap isearch-backward] . swiper-isearch-backward)
-    ([remap isearch-forward-regexp] . swiper)
-    ([remap isearch-backward-regexp] . swiper-backward))
+  '(([remap isearch-forward] . swiper)
+    ([remap isearch-backward] . swiper-backward)
+    ;; ([remap isearch-forward] . swiper-isearch)
+    ;; ([remap isearch-backward] . swiper-isearch-backward)
+    ;; ([remap isearch-forward-regexp] . swiper)
+    ;; ([remap isearch-backward-regexp] . swiper-backward)
+    )
   :global t)
 
 (use-package swiper
@@ -979,41 +991,7 @@ Configure eldoc
 
 #+end_src
 
-** Evaluation
-
-Replace boring old eval sexp with its prettier counterpart.
-
-#+begin_src emacs-lisp
-(use-package pp
-  :bind ([remap eval-expression] . #'pp-eval-expression))
-#+end_src
-
-** Debugging
-
-Debug keybindings
-#+begin_src emacs-lisp
-  (defun toggle-debug-on-message (regexp)
-    (interactive (list (read-string "Debug on message: " debug-on-message)))
-    (setq debug-on-message (unless (string-empty-p regexp) regexp)))
-
-  (use-package hydra
-    :bind
-    ("C-c d" . #'hydra-debug/body)
-    :config
-    (defhydra hydra-debug (:exit t)
-      "debug"
-      ("e" #'toggle-debug-on-error
-       (format "%s debug on error"
-               (if debug-on-error "disable" "enable")))
-      ("q" #'toggle-debug-on-quit
-       (format "%s debug on quit"
-               (if debug-on-quit "disable" "enable")))
-      ("m" #'toggle-debug-on-message
-       (if debug-on-message
-           (format "debug on message: %S" debug-on-message)
-         "debug on mssage"))))
-#+end_src
-
+Show docstring in a modal window
 
 #+begin_src emacs-lisp
 (defun eval-last-expression ()
@@ -1060,6 +1038,22 @@ Indentation with tabs breaks tags alignment.
 (with-eval-after-load 'org
   (add-hook 'org-mode-hook #'disable-indent-tabs-mode))
 #+END_SRC
+
+Buffer contents
+
+#+begin_src emacs-lisp
+(use-package visual-fill-column
+  :ensure t)
+
+(use-package org
+  :config
+  (add-hook 'org-mode-hook
+	    (lambda ()
+	      (visual-fill-column-mode t)
+	      (toggle-truncate-lines t)
+	      (toggle-word-wrap -1))))
+#+end_src
+
 
 ** Org Babel
 
@@ -1239,45 +1233,22 @@ Git timemachine allows you to quickly review the history of a signle file
 
 
 (pretty-hydra-define hydra-git
-  (:exit t)
-  ("Magit"
-   (("g" magit-status "magit-status")
-    ())
-   "Timemachine"
-   (("t" git-timemachine "git-timemachine"))
-   "Gutter"
-   (("n" hydra-git-gutter/git-gutter:next-hunk "next-hunk")
-    ("p" hydra-git-gutter/git-gutter:previous-hunk "previous-hunk"))
+  ()
+  (""
+   (("g" magit-status :exit t)
+    ("t" git-timemachine :exit t))
+   "Hunk"
+   (("n" git-gutter:next-hunk "next")
+    ("p" git-gutter:previous-hunk "previous"))
    ""
-   (("s" hydra-git-gutter/git-gutter:stage-hunk "stage-hunk")
-    ("v" hydra-git-gutter/git-gutter:revert-hunk "revert-hunk"))))
-
-(pretty-hydra-define hydra-git-gutter
-  (:title
-   (propertize "Git Gutter" 'face '(message-header-newsgroups))
-   :color red
-   :color pink :separator "-")
-  ("Git Gutter"
-   (("n" git-gutter:next-hunk "next-hunk")
-    ("p" git-gutter:previous-hunk "previous-hunk")
-    ("s" git-gutter:stage-hunk "stage-hunk")
-    ("v" git-gutter:revert-hunk "revert-hunk"))
-   "Hunk"
-   (("m" git-gutter:mark-hunk "mark-hunk")
-    ("s" git-gutter:stage-hunk "stage-hunk")
-    ("v" git-gutter:revert-hunk "revert-hunk"))
-   "Hunk"
-   (("n" git-gutter:next-hunk "next-hunk")
-    ("p" git-gutter:previous-hunk "previous-hunk")
-    ("e" git-gutter:end-of-hunk "end-of-hunk")
-    ("u" git-gutter:popup-hunk "popup-hunk"))
-   "Diff"
-   (("f" git-gutter:next-diff "next-diff")
-    ("b" git-gutter:previous-diff "previous-diff")
-    ("i" git-gutter:popup-diff "popup-diff"))
-   "Misc"
-   (("#" git-gutter:set-start-revision "set-start-revision")
-    ("$" git-gutter:statistic "statistic"))))
+   (("s" git-gutter:stage-hunk "stage")
+    ("v" git-gutter:revert-hunk "revert"))
+   ""
+   (("o" git-gutter:popup-hunk "popup")
+    ("m" git-gutter:mark-hunk "mark"))
+   "Git Timemachine"
+   (("t" git-timemachine "timemachine" :exit t)
+    ("b" git-timemachine-blame "blame" :exit t))))
 
 (use-package hydra
   :bind
@@ -1362,6 +1333,21 @@ Show file tree using dired sidebar:
 #+END_SRC
 
 * Emacs Lisp
+
+** Font lock
+
+Add more font lock faces
+#+begin_src emacs-lisp
+(use-package morlock
+  :ensure t
+  :config
+  (global-morlock-mode t))
+#+end_src
+
+Add more symbol highlights
+
+#+begin_src emacs-lisp
+#+end_src
 
 ** Paredit
 

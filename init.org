@@ -103,6 +103,19 @@ Install quelpa support for use-package:
     :config (quelpa-use-package-activate-advice)))
 #+END_SRC
 
+*** El-Get
+
+To fetch scripts from EmacsWiki
+
+#+begin_src emacs-lisp
+(use-package el-get
+  :ensure t)
+
+(use-package use-package-el-get
+  :ensure t
+  :config (use-package-el-get-setup))
+#+end_src
+
 ** Maintenance
 
 *** Validation
@@ -875,7 +888,7 @@ Add various counsel commands:
 (use-package counsel
   :bind
   (:map counsel-mode-map
-	([remap execute-extended-command] . nil))
+	([remap execute-extended-command] . counsel-M-x))
   ("C-c a" . #'counsel-ag)
   :config
   (counsel-mode 1)

@@ -893,6 +893,15 @@ Add various counsel commands:
   :config
   (counsel-mode 1)
   (setq counsel-mode-override-describe-bindings t))
+
+
+;; (use-package ivy-rich
+;;   :config
+;;   (ivy-rich-set-display-transformer
+;;    'counsel-M-x
+;;    `((,(-compose 'file-name-base 'symbol-file 'intern)
+;;       (:face file-name-shadow :width 20)
+;;       ()))))
 #+end_src
 
 Swiper Keybindings:

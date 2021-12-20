@@ -926,6 +926,9 @@ Configure company-mode
 (use-package lsp-mode)
 #+END_SRC
 
+#+begin_src emacs-lisp
+(use-package eglot :ensure t)
+#+end_src
 
 ** Help
 

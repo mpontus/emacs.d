@@ -1,4 +1,4 @@
-# -*- org-cappendontent-indentation: 0; org-src-preserve-indentation: t; -*-
+# -*- org-content-indentation: 0; org-src-preserve-indentation: t; -*-
 #+TITLE: Emacs Init File
 #+STARTUP: showall
 #+PROPERTY: header-args :tangle no :noweb yes :noweb-ref runtime-configuration :results silent
@@ -864,6 +864,8 @@ I'm using default completing read
   :config
   (ivy-mode 1)
   (define-key ivy-minibuffer-map (kbd "C-c C-c")
+    #'ivy-restrict-to-matches)
+  (define-key ivy-minibuffer-map (kbd "C-M-s")
     #'ivy-restrict-to-matches))
 
 ;; Display additional information alongside completion candidates.
@@ -932,20 +934,34 @@ Configure company-mode
 
 ** Help
 
+*** Help Plus
 
-This section provides help with emacs.
-
-- accessing documentation
-- changing configuration
-- debugging
+https://www.emacswiki.org/emacs/HelpPlus
 
 #+begin_src emacs-lisp
-;; Install help-mode extensions by Drew Adams
-(use-package help+
-  :quelpa (help+ :fetcher github  "emacsmirror/help-plus#405d525"))
+(use-package help-macro+
+  :quelpa (help-macro+ :fetcher wiki)) 
 #+end_src
 
+- `describe-keymap`
+- `describe-file` 
 
+#+begin_src emacs-lisp
+(use-package help+
+  :quelpa (help+ :fetcher wiki))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package help-fns+
+  :quelpa (help-fns+ :fetcher wiki))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package help-mode+
+  :quelpa (help-mode+ :fetcher wiki))
+
+#+end_src
+    
 ** Keybindings
 
 *** Hydra
@@ -984,6 +1000,35 @@ Experimenting with this package
   (setq enable-remote-dir-locals t))
 
 #+end_src
+** Project managementj
+
+** File Templates
+
+Insert template upon opening a new file:
+
+#+begin_src emacs-lisp
+(use-package autoinsert
+  :config
+  (setq auto-insert-query nil)
+  (setq auto-insert-directory "~/.emacs.d/insert")
+  (auto-insert-mode t))
+#+end_src
+
+
+#+begin_src emacs-lisp
+(use-package yatemplate
+  :config
+  (setq yatemplate-dir))
+#+end_src
+
+** Project Templates
+
+#+begin_src emacs-lisp
+(use-package skeletor
+:config
+(setq skeletor-project-directory "~/projects"))
+#+end_src
+
 * Elisp
 
 
@@ -1171,86 +1216,45 @@ I save notes in org files and export them as Anki decks to be able to review the
     (org-anki :fetcher "github" :repo "mpontus/org-anki"))
 #+END_SRC
 
+* Table editing
+#+begin_src emacs-lisp
+(use-package cell-mode
+  :quelpa
+  (cell-mode :fetcher git :url "https://gitlab.com/dto/cell-mode.git" :commit "52cd43318712a9afc0accefdd61bf9228ba36b58"))
+#+end_src
 * Git
 
 Configuration for Version Control tools
 
 #+begin_src emacs-lisp
-(pretty-hydra-define hydra-toggle
-  (global-map "C-c" :color red)
-  ("Toggle"
-   (("f" auto-fill-mode "auto-fill-mode" :color blue)
-    ("w" whitespace-mode "whitespace-mode" :color blue)
-    ("e" toggle-debug-on-error "debug-on-error" :color blue)
-    ("q" toggle-debug-on-quit "quit" :color blue))))
+(setq display-buffer-alist
+      '(("^\\*compilation\\*$" (display-buffer-reuse-window)) ("`\\*Warnings\\*$" display-buffer-other-window)))
+(add-to-list 'display-buffer-alist
+	     '(("`\\*git-gutter:diff\\*$" (display-buffer-same-window))))
 
-(pretty-hydra-define hydra-magit ()
-  ("Magit"
+(pretty-hydra-define hydra-git
+  ()
+  ("Git"
    (("g" magit-status "status" :exit t)
-    ("c" magit-commit-create "commit" :exit t))))
-
-(pretty-hydra-define hydra-git-gutter ()
-  ("Hunk"
+    ("t" git-timemachine "timemachine" :exit t))
+   "Hunk"
    (("n" git-gutter:next-hunk "next")
     ("p" git-gutter:previous-hunk "previous")
     ("s" git-gutter:stage-hunk "stage")
     ("v" git-gutter:revert-hunk "revert")
-    ("m" git-gutter:mark-hunk "mark")
     ;; TODO: pressing "o" twice shuld toggle popup off
-    ("o" git-gutter:popup-hunk "popup" :toggle t))))
+    ("o" git-gutter:popup-hunk "popup" :toggle t)
+    )
+   ;; "Git Timemachine"
+   ;; (("t" git-timemachine "timemachine" :exit t)
+   ;;  ("b" git-timemachine-blame "blame" :exit t)
+   ;;  ("p" git-timemachine-show-previous-revision
+   ;;   (and nil "back"))
+   ;;  ("n" git-timemachine-show-next-revision
+   ;;   (and nil "forward")))
+   ))
 
-(let ((heads (append hydra-magit/heads-plist
-		     hydra-git-gutter/heads-plist)))
-  (setq hydra-magit/heads-plist heads))
-
-
-;; (pretty-hydra-define hydra-git-timemachine ()
-;;   ("Git Timemachine"
-;;    (("t" git-timemachine "timemachine" :exit t)
-;;     ("b" git-timemachine-blame "blame" :exit t)
-;;     ("p" git-timemachine-show-previous-revision "back")
-;;     ("n" git-timemachine-show-next-revision "forward"))))
-
-;; (eval
-;;  (macroexpand-all
-;;   `(pretty-hydra-define hydra-git ()
-;;      (,@(append hydra-magit/heads-plist
-;; 		hydra-git-timemachine/heads-plist
-;; 		hydra-git-gutter/heads-plist)))))
-
-(defvar hydra-git/saved-configuration)
-(use-package hydra
-  :pretty-hydra
-  (hydra-git
-   (:color amaranth
-    :post 
-    (if debug-on-error (debug hydra-git/saved-configuration)
-      (set-window-configuration hydra-git/saved-configuration)))
-   ("Magit"
-    (("g" magit-status "status" :exit t)
-     ("c" (call-interactively
-	   (if prefix-arg 'magit-commit 'magit-commit-create))
-      "commit" :exit t))
-    ""
-    (("n" git-gutter:next-hunk "next")
-     ("p" git-gutter:previous-hunk "previous"))
-    "Hunk"
-    (("s" git-gutter:stage-hunk "stage")
-     ("v" git-gutter:revert-hunk "revert"))
-    ""
-    (;; TODO: pressing "o" twice shuld toggle popup off
-     ("o" git-gutter:popup-hunk "popup" :toggle t)
-     ("m" git-gutter:mark-hunk "mark"))
-    "Git Timemachine"
-    (("t" hydra-git-timemachine "timemachine" :exit t)
-     ("b" git-timemachine-blame "blame" :exit t))))
-  :config
-  (add-function
-   :around (symbol-function 'hydra-git/body)
-   (lambda (f &rest args)
-     (let ((hydra-git/saved-configuration
-	    (current-window-configuration (selected-frame))))
-       (apply f args)))))
+(global-set-key (kbd "C-c g") #'hydra-git/body)
 #+end_src
 
 ** Magit
@@ -1386,6 +1390,16 @@ Add more font lock faces
 Add more symbol highlights
 
 #+begin_src emacs-lisp
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package symex
+  :config
+  (symex-initialize)
+  (global-set-key (kbd "C-c ;") 'symex-mode-interface)
+  (symex-mode)
+  :custom
+  (symex-modal-backend 'evil))
 #+end_src
 
 ** Paredit
@@ -2227,4 +2241,20 @@ Use rnix language server for advanced editing features.
 		    :download-server-fn
 		    (lambda (_client callback error-callback _update?)
                       (lsp-package-ensure 'rnix-lsp callback error-callback)))))
+#+end_src
+
+Insert template into new ~.nix~ files.
+
+#+begin_src emacs-lisp
+(use-package autoinsert
+  :config
+  (add-to-list 'auto-insert-alist (cons 'nix-mode "nixpkg.nix")))
+#+end_src
+
+Enable language server
+
+#+begin_src emacs-lisp
+(use-package eglot
+  :config
+  (add-to-list 'eglot-server-programs '(nix-mode . ("rnix-lsp"))))
 #+end_src
